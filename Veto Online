@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EYC VETO - Student Portal</title>
+    <style>
+        :root {
+            --sidebar-bg: #0f172a;
+            --accent: #10b981;
+            --bg-main: #f8fafc;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg-main); overflow: hidden; }
+
+        /* Sidebar: Level Column */
+        .sidebar { width: 240px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; overflow-y: auto; box-shadow: 2px 0 10px rgba(0,0,0,0.2); }
+        .logo { padding: 25px; font-size: 1.6rem; font-weight: 800; color: var(--accent); border-bottom: 1px solid #1e293b; text-align: center; }
+        
+        .level-item { border-bottom: 1px solid #1e293b; }
+        .level-btn { width: 100%; padding: 18px; background: none; border: none; color: #cbd5e1; text-align: left; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; }
+        .level-btn:hover { background: #1e293b; color: white; }
+        .level-btn.active { border-left: 5px solid var(--accent); background: #1e293b; color: var(--accent); }
+
+        /* Drawer: Session Sub-menu */
+        .session-drawer { max-height: 0; overflow: hidden; background: #020617; transition: max-height 0.3s ease; }
+        .sess-btn { width: 100%; padding: 12px 35px; background: none; border: none; color: #64748b; text-align: left; cursor: pointer; font-size: 0.9rem; }
+        .sess-btn:hover { color: white; }
+        .sess-btn.active { color: var(--accent); font-weight: bold; }
+
+        /* Content Stage */
+        .stage { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 40px; }
+        .header-path { font-size: 0.9rem; color: #64748b; margin-bottom: 10px; text-transform: uppercase; }
+        .activity-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-top: 20px; }
+
+        /* Dynamic Activity Buttons */
+        .act-card { 
+            padding: 30px 20px; border-radius: 12px; color: white; font-weight: bold; font-size: 1.1rem;
+            cursor: pointer; transition: 0.3s; text-align: center; border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 8px;
+        }
+        .act-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.15); filter: brightness(1.1); }
+        .act-card small { font-size: 0.7rem; font-weight: normal; opacity: 0.8; text-transform: uppercase; }
+
+        /* Activity Type Colors */
+        .type-gr { background: #2563eb; }      /* Grammar */
+        .type-lis { background: #7c3aed; }     /* Listening */
+        .type-voc { background: #ea580c; }     /* Vocab */
+        .type-read { background: #0891b2; }    /* Reading */
+        .type-special { background: #be123c; } /* DMT/Squeezer/Wish */
+        .type-hw { background: #475569; }      /* H.W */
+        .type-tongue { background: #059669; }   /* Tongue Twister */
+        .type-shot { background: #db2777; }    /* One Shot */
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">EYC VETO</div>
+        <div id="levelContainer"></div>
+    </aside>
+
+    <main class="stage">
+        <div id="breadcrumb" class="header-path">Select Level & Session</div>
+        <h1 id="sessionTitle">Welcome, Student</h1>
+        <div class="activity-grid" id="activityGrid">
+            </div>
+    </main>
+
+    <script>
+        // DATA OBJECT: Based on your provided table (Example for L1-L2 to show the logic)
+        const syllabus = {
+            1: {
+                1: ["Gr 1 study", "Lis 1 intro", "H W", "Lis 1 test", "Gr 1 test"],
+                2: ["Lis 1 Rev", "Gr 1 Rev", "Gr 2 study", "Vocab 1 Rev", "H W", "Gr 2 test", "Lis 2 test", "Vocab 1 study"],
+                3: ["Lis 2 Rev", "Gr 2 Rev", "Gr 3 study", "Vocab 1 test", "Vocab 2 Rev", "H W", "Gr 3 test", "Lis 3 test", "Vocab 2 study"],
+                4: ["Lis 3 Rev", "Gr 3 Rev", "Gr 4 study", "Vocab 2 test", "Reading 1 Rev", "H W", "Gr 4 test", "Lis 4 test", "Reading 1 Rec"]
+            },
+            2: {
+                1: ["Lis 4 Rev", "Gr 4 Rev", "Reading 1 Rev", "Reading 2 Rev", "Gr 5 study"],
+                2: ["One Shot 1 intro", "H W", "Lis 5 test", "Gr 5 test", "Reading 2 Rec", "One Shot 1 study"],
+                3: ["Reading 2 Rev", "Reading 3 Rev", "Vocab 3 Rev", "One Shot 1 test", "H W", "Lis 6 test", "Reading 3 Rec", "Vocab 3 study"],
+                4: ["Reading 4 Rev", "Vocab 3 test", "Vocab 4 Rev", "H W", "Lis 7 test", "Reading 4 Rec", "Vocab 4 study", "One Shot 2 study"]
+            }
+            // Logic continues for 12 levels...
+        };
+
+        // Helper to determine color based on text
+        function getActType(name) {
+            const n = name.toLowerCase();
+            if (n.includes('gr')) return 'type-gr';
+            if (n.includes('lis')) return 'type-lis';
+            if (n.includes('vocab')) return 'type-voc';
+            if (n.includes('reading')) return 'type-read';
+            if (n.includes('h w')) return 'type-hw';
+            if (n.includes('tongue')) return 'type-tongue';
+            if (n.includes('one shot')) return 'type-shot';
+            if (n.includes('squeezer') || n.includes('dmt') || n.includes('wish') || n.includes('project') || n.includes('gp')) return 'type-special';
+            return 'type-hw';
+        }
+
+        // Initialize Levels
+        const levelContainer = document.getElementById('levelContainer');
+        for (let i = 1; i <= 12; i++) {
+            levelContainer.innerHTML += `
+                <div class="level-item">
+                    <button class="level-btn" onclick="toggleDrawer(${i}, this)">LEVEL ${i} <span>▾</span></button>
+                    <div class="session-drawer" id="drawer-${i}">
+                        ${[1,2,3,4].map(s => `<button class="sess-btn" onclick="loadSession(${i}, ${s}, this)">Session ${s}</button>`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleDrawer(lvl, btn) {
+            document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const drawer = document.getElementById(`drawer-${lvl}`);
+            const isOpen = drawer.style.maxHeight;
+            document.querySelectorAll('.session-drawer').forEach(d => d.style.maxHeight = null);
+            drawer.style.maxHeight = isOpen ? null : drawer.scrollHeight + "px";
+        }
+
+        function loadSession(lvl, sess, btn) {
+            document.querySelectorAll('.sess-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            document.getElementById('breadcrumb').innerText = `Level ${lvl} / Session ${sess}`;
+            document.getElementById('sessionTitle').innerText = `Your Activities`;
+            
+            const grid = document.getElementById('activityGrid');
+            const activities = syllabus[lvl] ? syllabus[lvl][sess] : null;
+
+            if(!activities) {
+                grid.innerHTML = "<p>Coming Soon...</p>";
+                return;
+            }
+
+            grid.innerHTML = activities.map(act => `
+                <button class="act-card ${getActType(act)}" onclick="launch('${act}')">
+                    <small>${getActType(act).replace('type-', '')}</small>
+                    ${act}
+                </button>
+            `).join('');
+        }
+
+        function launch(name) {
+            alert("System: Loading " + name + "\nAction: Fetching JSON data from /data/L" + name + ".json");
+        }
+    </script>
+</body>
+</html>
