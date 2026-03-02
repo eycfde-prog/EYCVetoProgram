@@ -67,87 +67,83 @@
             </div>
     </main>
 
-    <script>
-        // DATA OBJECT: Based on your provided table (Example for L1-L2 to show the logic)
-        const syllabus = {
-            1: {
-                1: ["Gr 1 study", "Lis 1 intro", "H W", "Lis 1 test", "Gr 1 test"],
-                2: ["Lis 1 Rev", "Gr 1 Rev", "Gr 2 study", "Vocab 1 Rev", "H W", "Gr 2 test", "Lis 2 test", "Vocab 1 study"],
-                3: ["Lis 2 Rev", "Gr 2 Rev", "Gr 3 study", "Vocab 1 test", "Vocab 2 Rev", "H W", "Gr 3 test", "Lis 3 test", "Vocab 2 study"],
-                4: ["Lis 3 Rev", "Gr 3 Rev", "Gr 4 study", "Vocab 2 test", "Reading 1 Rev", "H W", "Gr 4 test", "Lis 4 test", "Reading 1 Rec"]
-            },
-            2: {
-                1: ["Lis 4 Rev", "Gr 4 Rev", "Reading 1 Rev", "Reading 2 Rev", "Gr 5 study"],
-                2: ["One Shot 1 intro", "H W", "Lis 5 test", "Gr 5 test", "Reading 2 Rec", "One Shot 1 study"],
-                3: ["Reading 2 Rev", "Reading 3 Rev", "Vocab 3 Rev", "One Shot 1 test", "H W", "Lis 6 test", "Reading 3 Rec", "Vocab 3 study"],
-                4: ["Reading 4 Rev", "Vocab 3 test", "Vocab 4 Rev", "H W", "Lis 7 test", "Reading 4 Rec", "Vocab 4 study", "One Shot 2 study"]
-            }
-            // Logic continues for 12 levels...
-        };
-
-        // Helper to determine color based on text
-        function getActType(name) {
-            const n = name.toLowerCase();
-            if (n.includes('gr')) return 'type-gr';
-            if (n.includes('lis')) return 'type-lis';
-            if (n.includes('vocab')) return 'type-voc';
-            if (n.includes('reading')) return 'type-read';
-            if (n.includes('h w')) return 'type-hw';
-            if (n.includes('tongue')) return 'type-tongue';
-            if (n.includes('one shot')) return 'type-shot';
-            if (n.includes('squeezer') || n.includes('dmt') || n.includes('wish') || n.includes('project') || n.includes('gp')) return 'type-special';
-            return 'type-hw';
+ <script>
+    // THE MASTER SYLLABUS DATA (Levels 1 - 12)
+    const syllabus = {
+        1: {
+            1: ["Gr 1 study", "Lis 1 intro", "H W", "Lis 1 test", "Gr 1 test"],
+            2: ["Lis 1 Rev", "Gr 1 Rev", "Gr 2 study", "Vocab 1 Rev", "H W", "Gr 2 test", "Lis 2 test", "Vocab 1 study"],
+            3: ["Lis 2 Rev", "Gr 2 Rev", "Gr 3 study", "Vocab 1 test", "Vocab 2 Rev", "H W", "Gr 3 test", "Lis 3 test", "Vocab 2 study"],
+            4: ["Lis 3 Rev", "Gr 3 Rev", "Gr 4 study", "Vocab 2 test", "Reading 1 Rev", "H W", "Gr 4 test", "Lis 4 test", "Reading 1 Rec"]
+        },
+        2: {
+            1: ["Lis 4 Rev", "Gr 4 Rev", "Reading 1 Rev", "Reading 2 Rev", "Gr 5 study", "One Shot 1 intro", "H W"],
+            2: ["Lis 5 test", "Gr 5 test", "Reading 2 Rec", "One Shot 1 study", "Lis 5 Rev", "Gr 5 Rev"],
+            3: ["Reading 2 Rev", "Reading 3 Rev", "Vocab 3 Rev", "One Shot 1 test", "H W", "Lis 6 test", "Reading 3 Rec", "Vocab 3 study"],
+            4: ["Reading 4 Rev", "Vocab 3 test", "Vocab 4 Rev", "H W", "Lis 7 test", "Reading 4 Rec", "Vocab 4 study", "One Shot 2 study", "Lis 8 test", "Reading 5 Rec", "Gr 6 test", "Tongue Twister 1 Rec"]
+        },
+        3: {
+            1: ["Lis 8 Rev", "Gr 6 Rev", "Reading 5 Rev", "Reading 6 Rev", "Tongue Twister 1 Rev", "Tongue Twister 2 Rev", "Gr 7 study", "DMT 1 test", "Squeezer 1 test"],
+            2: ["H W", "Lis 9 test", "Reading 6 Rec", "Tongue Twister 2 Rec", "One Shot 3 study", "Lis 9 Rev", "Gr 7 Rev"],
+            3: ["Reading 6 Rev", "Reading 7 Rev", "Tongue Twister 2 Rev", "Tongue Twister 3 Rev", "Vocab 5 Rev", "One Shot 3 study", "H W", "Lis 10 test", "Reading 7 Rec", "Tongue Twister 3 Rec", "Vocab 5 study"],
+            4: ["Lis 10 Rev", "Reading 7 Rev", "Reading 8 Rev", "Tongue Twister 3 Rev", "Tongue Twister 4 Rev", "Vocab 5 test", "Vocab 6 Rev", "H W", "Lis 11 test", "Reading 8 Rec", "Tongue Twister 4 Rec", "Vocab 6 study", "One Shot 4 study", "Lis 11 Rev", "Reading 8 Rev", "Reading 9 Rev", "Tongue Twister 4 Rev", "Tongue Twister 5 Rev", "Gr 8 study", "One Shot 4 test", "Vocab 6 test", "Squeezer 1 intro", "H W", "Lis 12 test", "Reading 9 Rec", "Tongue Twister 5 Rec", "Gr 8 test", "Squeezer 1 study"]
+        },
+        4: {
+            1: ["Lis 12 Rev", "Gr 8 Rev", "Reading 9 Rev", "Reading 10 Rev", "Tongue Twister 5 Rev", "Tongue Twister 6 Rev", "Gr 9 study", "DMT 2 Rev", "Squeezer 2 Rev"],
+            2: ["H W", "Lis 13 test", "Gr 9 test", "Reading 10 Rec", "Tongue Twister 6 Rec", "Squeezer 2 study", "One Shot 5 study", "Lis 13 Rev", "Gr 9 Rev"],
+            3: ["Reading 10 Rev", "Reading 11 Rev", "Tongue Twister 6 Rev", "Tongue Twister 7 Rev", "Vocab 7 Rev", "One Shot 5 study", "H W", "Lis 14 test", "Reading 11 Rec", "Tongue Twister 7 Rec", "Vocab 7 study"],
+            4: ["Lis 14 Rev", "Reading 11 Rev", "Reading 12 Rev", "Tongue Twister 7 Rev", "Tongue Twister 8 Rev", "Vocab 7 test", "Vocab 8 Rev", "H W", "Lis 15 test", "Reading 12 Rec", "Tongue Twister 8 Rec", "Vocab 8 study", "One Shot 6 study", "Lis 15 Rev", "Reading 12 Rev", "Reading 13 Rev", "Tongue Twister 8 Rev", "Tongue Twister 9 Rev", "Gr 10 study", "One Shot 6 test", "Vocab 8 test", "DMT 1 intro", "H W", "Lis 16 test", "Reading 13 Rec", "Tongue Twister 9 Rec", "Gr 10 test", "DMT 1 study"]
+        },
+        5: {
+            1: ["Lis 16 Rev", "Gr 10 Rev", "Reading 13 Rev", "Reading 14 Rev", "Tongue Twister 9 Rev", "Tongue Twister 10 Rev", "Gr 11 study", "DMT 3 Rev", "Wish 1 Test"],
+            2: ["H W", "Lis 17 test", "Gr 11 test", "Reading 14 Rec", "Tongue Twister 10 Rec", "DMT 2 study", "One Shot 7 study", "Lis 17 Rev", "Gr 11 Rev"],
+            3: ["Reading 14 Rev", "Reading 15 Rev", "Tongue Twister 10 Rev", "Tongue Twister 11 Rev", "Vocab 9 Rev", "Squeezer 2 test", "One Shot 7 study", "H W", "Lis 18 test", "Reading 15 Rec", "Tongue Twister 11 Rec", "Vocab 9 study"],
+            4: ["Lis 18 Rev", "Reading 15 Rev", "Reading 16 Rev", "Tongue Twister 11 Rec", "Tongue Twister 12 Rev", "Vocab 9 test", "Vocab 10 Rev", "H W", "Lis 19 test", "Reading 16 Rec", "Tongue Twister 12 Rec", "Vocab 10 study", "One Shot 8 study", "Lis 19 Rev", "Reading 16 Rev", "Reading 17 Rev", "Tongue Twister 12 Rev", "Tongue Twister 13 Rev", "Gr 12 study", "One Shot 8 test", "Vocab 10 test", "H W", "Lis 20 test", "Reading 17 Rec", "Tongue Twister 13 Rec", "Gr 12 test", "job interview role play"]
+        },
+        6: {
+            1: ["Lis 20 Rev", "Gr 12 Rev", "Reading 17 Rev", "Reading 18 Rev", "Tongue Twister 13 Rev", "Tongue Twister 14 Rev", "Gr 13 study", "Wish 2 Test", "Squeezer 3 Rev"],
+            2: ["H W", "Lis 21 test", "Gr 13 test", "Reading 18 Rec", "Tongue Twister 14 Rec", "DMT 3 study", "One Shot 9 study", "Lis 21 Rev", "Gr 13 Rev"],
+            3: ["Reading 18 Rev", "Reading 19 Rev", "Tongue Twister 12 Rev", "Tongue Twister 15 Rev", "Vocab 11 Rev", "One Shot 9 study", "H W", "Lis 22 test", "Reading 19 Rec", "Tongue Twister 15 Rec", "Vocab 11 study"],
+            4: ["Lis 22 Rev", "Reading 19 Rev", "Reading 20 Rev", "Tongue Twister 15 Rev", "Tongue Twister 16 Rev", "Vocab 11 test", "Vocab 12 Rev", "H W", "Lis 23 test", "Reading 20 Rec", "Tongue Twister 16 Rec", "Vocab 12 study", "One Shot 10 study", "Lis 23 Rev", "Reading 20 Rev", "Reading 21 Rev", "Tongue Twister 16 Rev", "Tongue Twister 17 Rev", "Gr 14 study", "One Shot 10 test", "Vocab 12 test", "Wish 1 intro", "H W", "Lis 24 test", "Reading 21 Rec", "Tongue Twister 17 Rec", "Gr 14 test", "Wish 1 study"]
+        },
+        7: {
+            1: ["Lis 24 Rev", "Gr 14 Rev", "Reading 21 Rev", "Reading 22 Rev", "Tongue Twister 17 Rev", "Tongue Twister 18 Rev", "Gr 15 study", "Project 1 test", "Wish 1 Test"],
+            2: ["H W", "Lis 25 test", "Gr 15 test", "Reading 22 Rec", "Tongue Twister 18 Rec", "Squeezer 3 study", "One Shot 11 study", "Lis 25 Rev", "Gr 15 Rev"],
+            3: ["Reading 22 Rev", "Reading 23 Rev", "Tongue Twister 16 Rev", "Tongue Twister 19 Rev", "Vocab 13 Rev", "One Shot 11 study", "H W", "Lis 26 test", "Reading 23 Rec", "Tongue Twister 19 Rec", "Vocab 13 study"],
+            4: ["Lis 26 Rev", "Reading 23 Rev", "Reading 24 Rev", "Tongue Twister 19 Rec", "Tongue Twister 20 Rev", "Vocab 13 test", "Vocab 14 Rev", "H W", "Lis 27 test", "Reading 24 Rec", "Tongue Twister 20 Rec", "Vocab 14 study", "One Shot 12 study", "Lis 27 Rev", "Reading 24 Rev", "Reading 25 Rev", "Tongue Twister 20 Rev", "Tongue Twister 21 Rev", "Gr 16 study", "One Shot 12 test", "Vocab 14 test", "Wish 2 Rev", "H W", "Lis 28 test", "Reading 25 Rec", "Tongue Twister 21 Rec", "Gr 16 test", "Wish 2 study"]
+        },
+        8: {
+            1: ["Lis 28 Rev", "Gr 16 Rev", "Reading 25 Rev", "Reading 26 Rev", "Tongue Twister 21 Rev", "Tongue Twister 22 Rev", "Gr 17 study", "Squeezer 3 Rev"],
+            2: ["H W", "Lis 29 test", "Gr 17 test", "Reading 26 Rec", "Tongue Twister 22 Rec", "Squeezer 4 study", "One Shot 13 study", "Lis 29 Rev", "Gr 17 Rev"],
+            3: ["Reading 26 Rev", "Reading 27 Rev", "Tongue Twister 20 Rev", "Tongue Twister 23 Rev", "Vocab 15 Rev", "One Shot 13 study", "H W", "Lis 30 test", "Reading 27 Rec", "Tongue Twister 23 Rec", "Vocab 15 study"],
+            4: ["Lis 30 Rev", "Reading 27 Rev", "Reading 28 Rev", "Tongue Twister 23 Rev", "Tongue Twister 24 Rev", "Vocab 15 test", "Vocab 16 Rev", "H W", "Lis 31 test", "Reading 28 Rec", "Tongue Twister 24 Rec", "Vocab 16 study", "One Shot 14 study", "Lis 31 Rev", "Reading 28 Rev", "Reading 29 Rev", "Tongue Twister 24 Rev", "Tongue Twister 25 Rev", "Gr 18 study", "One Shot 14 test", "Vocab 16 test", "Project 1 intro", "H W", "Lis 32 test", "Reading 29 Rec", "Tongue Twister 25 Rec", "Gr 18 test", "Project 1 study"]
+        },
+        9: {
+            1: ["Lis 32 Rev", "Gr 18 Rev", "Reading 29 Rev", "Reading 30 Rev", "Tongue Twister 25 Rev", "Tongue Twister 26 Rev", "Gr 19 study", "Project 1 test", "Squeezer 4 Rev"],
+            2: ["H W", "Lis 33 test", "Gr 19 test", "Reading 30 Rec", "Tongue Twister 26 Rec", "Squeezer 5 study", "One Shot 15 study", "Lis 33 Rev", "Gr 19 Rev"],
+            3: ["Reading 30 Rev", "Reading 31 Rev", "Tongue Twister 24 Rev", "Tongue Twister 27 Rev", "Vocab 17 Rev", "One Shot 15 study", "H W", "Lis 34 test", "Reading 31 Rec", "Tongue Twister 27 Rec", "Vocab 17 study"],
+            4: ["Lis 34 Rev", "Reading 31 Rev", "Reading 32 Rev", "Tongue Twister 27 Rec", "Tongue Twister 28 Rev", "Vocab 17 test", "Vocab 18 Rev", "H W", "Lis 35 test", "Reading 32 Rec", "Tongue Twister 28 Rev", "Vocab 18 study", "One Shot 16 study", "Lis 35 Rev", "Reading 32 Rev", "Reading 33 Rev", "Tongue Twister 28 Rev", "Tongue Twister 29 Rev", "Gr 20 study", "One Shot 16 test", "Vocab 18 test", "DMT 4 Rev", "H W", "Lis 36 test", "Reading 33 Rec", "Tongue Twister 29 Rec", "Gr 20 test", "DMT 4 study"]
+        },
+        10: {
+            1: ["Lis 36 Rev", "Gr 20 Rev", "Reading 33 Rev", "Reading 34 Rev", "Tongue Twister 29 Rev", "Tongue Twister 30 Rev", "DMT 4 rest", "Squeezer 5 Rev"],
+            2: ["H W", "Lis 37 test", "Reading 34 Rec", "Tongue Twister 30 Rec", "Wish 3 study", "Lis 37 Rev", "Reading 34 Rev"],
+            3: ["Reading 34 Rev", "Reading 35 Rev", "Tongue Twister 28 Rev", "Tongue Twister 31 Rev", "Vocab 19 Rev", "One Shot 17 study", "H W", "Lis 38 test", "Reading 35 Rec", "Tongue Twister 31 Rec", "Vocab 19 study"],
+            4: ["Lis 38 Rev", "Reading 35 Rev", "Reading 36 Rev", "Tongue Twister 31 Rev", "Tongue Twister 32 Rev", "Vocab 19 test", "Vocab 20 Rev", "H W", "Lis 39 test", "Reading 36 Rec", "Tongue Twister 32 Rev", "Vocab 20 study", "One Shot 18 study", "Lis 39 Rev", "Reading 36 Rev", "Reading 37 Rev", "Tongue Twister 32 Rev", "Tongue Twister 33 Rev", "One Shot 18 test", "Vocab 20 test", "Project 2 Rev", "H W", "Lis 40 test", "Reading 37 Rec", "Tongue Twister 33 Rec", "Project 2 study"]
+        },
+        11: {
+            1: ["Lis 40 Rev", "GP intro", "Reading 37 Rev", "Reading 38 Rev", "Tongue Twister 33 Rev", "Tongue Twister 34 Rev", "wish 3 Rev"],
+            2: ["gp study", "H W", "Lis 41 test", "gp study", "Reading 38 Rec", "Tongue Twister 34 Rec", "Wish 3 study"],
+            3: ["Lis 41 Rev", "dmt 5 rev", "Reading 38 Rev", "Reading 39 Rev", "Tongue Twister 32 Rev", "Tongue Twister 35 Rev", "Wish 3 test", "One Shot 19 study", "H W", "Lis 42 test", "Reading 39 Rec", "Tongue Twister 35 Rec", "dmt 5 study"],
+            4: ["Lis 42 Rev", "H W", "Reading 39 Rev", "Reading 40 Rev", "Tongue Twister 35 Rev", "Tongue Twister 36 Rev", "Squeezer 6 Rev", "dmt 5 test", "H W", "Lis 43 test", "Reading 40 Rec", "Tongue Twister 36 Rec", "Squeezer 6 study", "One Shot 20 study", "Lis 43 Rev", "Reading 40 Rev", "Tongue Twister 36 Rev", "Squeezer 6 test", "gp rev", "H W", "gp study"]
+        },
+        12: {
+            1: ["gp rev", "gp study", "H W", "gp study", "gp rev"],
+            2: ["H W", "gp rev", "gp study", "gp rev"],
+            3: ["H W", "gp study", "gp rev", "gp sending", "H W", "gp study"],
+            4: ["H W", "gp sending", "Session 4", "in class", "gp rev", "gp Viewing", "H W", "gp study"]
         }
+    };
+</script>
 
-        // Initialize Levels
-        const levelContainer = document.getElementById('levelContainer');
-        for (let i = 1; i <= 12; i++) {
-            levelContainer.innerHTML += `
-                <div class="level-item">
-                    <button class="level-btn" onclick="toggleDrawer(${i}, this)">LEVEL ${i} <span>▾</span></button>
-                    <div class="session-drawer" id="drawer-${i}">
-                        ${[1,2,3,4].map(s => `<button class="sess-btn" onclick="loadSession(${i}, ${s}, this)">Session ${s}</button>`).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        function toggleDrawer(lvl, btn) {
-            document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            const drawer = document.getElementById(`drawer-${lvl}`);
-            const isOpen = drawer.style.maxHeight;
-            document.querySelectorAll('.session-drawer').forEach(d => d.style.maxHeight = null);
-            drawer.style.maxHeight = isOpen ? null : drawer.scrollHeight + "px";
-        }
-
-        function loadSession(lvl, sess, btn) {
-            document.querySelectorAll('.sess-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            document.getElementById('breadcrumb').innerText = `Level ${lvl} / Session ${sess}`;
-            document.getElementById('sessionTitle').innerText = `Your Activities`;
-            
-            const grid = document.getElementById('activityGrid');
-            const activities = syllabus[lvl] ? syllabus[lvl][sess] : null;
-
-            if(!activities) {
-                grid.innerHTML = "<p>Coming Soon...</p>";
-                return;
-            }
-
-            grid.innerHTML = activities.map(act => `
-                <button class="act-card ${getActType(act)}" onclick="launch('${act}')">
-                    <small>${getActType(act).replace('type-', '')}</small>
-                    ${act}
-                </button>
-            `).join('');
-        }
-
-        function launch(name) {
-            alert("System: Loading " + name + "\nAction: Fetching JSON data from /data/L" + name + ".json");
-        }
-    </script>
 </body>
 </html>
