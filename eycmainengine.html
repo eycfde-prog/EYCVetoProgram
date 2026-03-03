@@ -65,7 +65,6 @@
         const dynamicContent = document.getElementById('dynamic-content');
         const audioPlayerUI = document.getElementById('audioPlayer');
 
-        // 1. Get Activity ID from URL (?activity=Lis_1)
         const params = new URLSearchParams(window.location.search);
         const activityID = params.get('activity');
 
@@ -79,7 +78,6 @@
                 });
         }
 
-        // 2. Initialize Activity based on Type
         function initActivity(data) {
             document.getElementById('activity-title').innerText = data.title || "EYC Activity";
             
@@ -87,17 +85,17 @@
                 audioPlayerUI.style.display = 'flex';
                 audio.src = data.audioUrl;
                 renderListening(data.dialogue);
+            } else if (data.type === "grammar") {
+                audioPlayerUI.style.display = 'none';
+                renderGrammar(data.questions);
             } else {
-                // Future types like 'quiz' or 'reading' will go here
                 dynamicContent.innerHTML = "<p>Activity type not supported yet.</p>";
             }
         }
 
-        // 3. Render Listening Dialogue with Blanks
         function renderListening(dialogue) {
             let html = '';
             dialogue.forEach(line => {
-                // Regex to find [word] and replace with input
                 const processedText = line.text.replace(/\[(.*?)\]/g, 
                     `<input type="text" class="blank-input" data-ans="$1" placeholder="...">`);
                 
@@ -111,7 +109,24 @@
             dynamicContent.innerHTML = html;
         }
 
-        // 4. Audio Controls
+        function renderGrammar(questions) {
+            let html = '';
+            questions.forEach((q, index) => {
+                html += `
+                    <div class="question-block" style="margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
+                        <p style="font-weight: bold;">Q${q.questionNumber}: ${q.text}</p>
+                        ${q.options.map(opt => `
+                            <label style="display: block; margin: 10px 0; cursor: pointer;">
+                                <input type="radio" name="q${index}" class="grammar-input" value="${opt}"> 
+                                ${opt}
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+            });
+            dynamicContent.innerHTML = html;
+        }
+
         function togglePlay() {
             if (audio.paused) { audio.play(); playBtn.innerText = "⏸️"; }
             else { audio.pause(); playBtn.innerText = "▶️"; }
@@ -125,40 +140,44 @@
             document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
         };
 
- 
+        function collectAndSubmit() {
+            const data = window.getStudentData();
+            document.getElementById('status-msg').innerText = "✅ Responses saved to storage! Now click 'SUBMIT MY WORK' below.";
+            document.getElementById('status-msg').style.color = "blue";
+        }
 
-// وظيفة الزرار اللي جوه الأنجين (لو الطالب داس عليه بالغلط أو كاختصار)
-function collectAndSubmit() {
-    const data = window.getStudentData();
-    document.getElementById('status-msg').innerText = "✅ Responses saved to storage! Now click 'SUBMIT MY WORK' below.";
-    document.getElementById('status-msg').style.color = "blue";
-}
+        window.getStudentData = function() {
+            let studentAnswers = [];
+            
+            const grammarInputs = document.querySelectorAll('.question-block');
+            if (grammarInputs.length > 0) {
+                grammarInputs.forEach((block, index) => {
+                    const selected = block.querySelector(`input[name="q${index}"]:checked`);
+                    studentAnswers.push(selected ? selected.value : "");
+                });
+            } else {
+                const inputs = document.querySelectorAll('.blank-input');
+                studentAnswers = Array.from(inputs).map(i => i.value.trim());
+            }
 
-window.getStudentData = function() {
-    const inputs = document.querySelectorAll('.blank-input');
-    const studentAnswers = Array.from(inputs).map(i => i.value.trim());
-    
-    const payload = {
-        email: "dananeer.ezz@gmail.com",
-        activity: activityID,
-        answers: studentAnswers
-    };
+            const payload = {
+                email: "dananeer.ezz@gmail.com",
+                activity: activityID,
+                answers: studentAnswers
+            };
 
-    saveToStorage(payload); // إرسال النسخة الاحتياطية
-    return payload;
-};
+            saveToStorage(payload);
+            return payload;
+        };
 
-function saveToStorage(payload) {
-    const storageScriptURL = "https://script.google.com/macros/s/AKfycbyUJ9mRlQ3UVwEVemSBdXi4gv2hEabW51XCDgLBxKAXDGrEViji97bORBl_fgmoZWMf/exec";
-    fetch(storageScriptURL, {
-        method: "POST",
-        mode: "no-cors", // مهم جداً عشان متوقفش الكود لو في مشاكل تصاريح
-        body: JSON.stringify(payload)
-    });
-}
-
+        function saveToStorage(payload) {
+            const storageScriptURL = "https://script.google.com/macros/s/AKfycbyUJ9mRlQ3UVwEVemSBdXi4gv2hEabW51XCDgLBxKAXDGrEViji97bORBl_fgmoZWMf/exec";
+            fetch(storageScriptURL, {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify(payload)
+            });
+        }
     </script>
 </body>
-
 </html>
-
