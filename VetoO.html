@@ -140,9 +140,10 @@
         </div>
     </div>
 
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
-        const GRADING_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4yQtTi7ou-mo72QcDDNXRRkaBhNoJpp65MYsC0xqp262V2C7WMnCRf-vETx7Q2-fahw/exec";
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4yQtTi7ou-mo72QcDDNXRRkaBhNoJpp65MYsC0xqp262V2C7WMnCRf-vETx7Q2-fahw/exec";
+    const GRADING_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4yQtTi7ou-mo72QcDDNXRRkaBhNoJpp65MYsC0xqp262V2C7WMnCRf-vETx7Q2-fahw/exec";
 
         const syllabus = {
             1: { 1: ["H W", "Lis 1 test", "Gr 1 test"], 2: ["H W", "Gr 2 test", "Lis 2 test", "Vocab 1 study"], 3: ["H W", "Gr 3 test", "Lis 3 test", "Vocab 2 study"], 4: ["H W", "Gr 4 test", "Lis 4 test", "Reading 1 Rec"] },
@@ -160,66 +161,77 @@
         };
 
 async function attemptLogin() {
-    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-    const code = document.getElementById('loginCode').value.trim();
-    const btn = document.getElementById('loginBtn');
+        const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+        const code = document.getElementById('loginCode').value.trim();
+        const btn = document.getElementById('loginBtn');
 
-    if (!email || !code) {
-        alert("Agent, we need both Email and Code to proceed.");
-        return;
-    }
+        if (!email || !code) {
+            alert("Agent, we need both Email and Code to proceed.");
+            return;
+        }
 
-    btn.innerText = "VERIFYING IDENTITY...";
-    btn.disabled = true;
+        btn.innerText = "VERIFYING IDENTITY...";
+        btn.disabled = true;
 
-    // تأكد من وضع الـ ID الخاص بسكريبت الـ doGet هنا
-    const LOGIN_URL = "https://script.google.com/macros/s/AKfycbz4yQtTi7ou-mo72QcDDNXRRkaBhNoJpp65MYsC0xqp262V2C7WMnCRf-vETx7Q2-fahw/exec"; 
+        try {
+            // إضافة التحقق من صحة الرابط بإضافة معاملات عشوائية لمنع الكاش
+            const finalUrl = `${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&t=${new Date().getTime()}`;
+            
+            const res = await fetch(finalUrl);
+            const user = await res.json();
 
-    try {
-        const res = await fetch(`${LOGIN_URL}?email=${email}&code=${code}`);
-        const user = await res.json();
-
-        if (user.error) {
-            alert(user.error);
+            if (user.error) {
+                alert("Login Error: " + user.error);
+                btn.innerText = "VERIFY IDENTITY";
+                btn.disabled = false;
+                // إذا كان هناك خطأ، نحذف البيانات المخزنة لإجبار المستخدم على إدخالها صح
+                localStorage.removeItem('veto_email');
+                localStorage.removeItem('veto_code');
+            } else {
+                localStorage.setItem('veto_email', email);
+                localStorage.setItem('veto_code', code);
+                
+                document.getElementById('loginOverlay').style.display = 'none';
+                loadUserData(user); // استدعاء الدالة التي كتبناها بالأعلى
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Connection Error. Please check your internet or Script URL.");
             btn.innerText = "VERIFY IDENTITY";
             btn.disabled = false;
-        } else {
-            // حفظ البيانات للدخول التلقائي المستقبلي
-            localStorage.setItem('veto_email', email);
-            localStorage.setItem('veto_code', code);
-            
-            document.getElementById('loginOverlay').style.display = 'none';
-            loadUserData(user);
         }
-    } catch (e) {
-        alert("Communication error with the server.");
-        btn.innerText = "VERIFY IDENTITY";
-        btn.disabled = false;
     }
-}
 
-// تعديل دالة التحقق عند فتح الصفحة
-window.addEventListener('DOMContentLoaded', () => {
-    const savedEmail = localStorage.getItem('veto_email');
-    const savedCode = localStorage.getItem('veto_code');
-    if (savedEmail && savedCode) {
-        document.getElementById('loginEmail').value = savedEmail;
-        document.getElementById('loginCode').value = savedCode;
-        attemptLogin(); // دخول تلقائي
+    // دالة تحديث واجهة المستخدم بالبيانات القادمة من جوجل شيت
+    function loadUserData(user) {
+        document.getElementById('userAvatar').src = user.avatar || "https://avataaars.io/?avatarStyle=Transparent";
+        document.getElementById('userName').innerText = user.name || "Agent";
+        document.getElementById('globalRank').innerText = "#" + (user.gRank || "--");
+        document.getElementById('localRank').innerText = "#" + (user.lRank || "--");
+        document.getElementById('userTokens').innerText = user.tokens || 0;
+        
+        const stars = parseFloat(user.stars) || 0;
+        document.getElementById('userStars').innerText = stars.toFixed(1);
+        document.getElementById('notifBanner').innerText = user.notification || "Welcome Agent!";
     }
-});
-        function getActType(name) {
-            const n = name.toLowerCase();
-            if (n.includes('test')) return 'type-test';
-            if (n.includes('rec')) return 'type-rec';
-            if (n.includes('study')) return 'type-study';
-            if (n.includes('h w')) return 'type-hw';
-            if (n.includes('gp') || n.includes('project')) return 'type-gp';
-            if (n.includes('squeezer') || n.includes('dmt') || n.includes('wish')) return 'type-special';
-            return 'type-hw';
+
+    // البقاء على تسجيل الدخول
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedEmail = localStorage.getItem('veto_email');
+        const savedCode = localStorage.getItem('veto_code');
+        if (savedEmail && savedCode) {
+            document.getElementById('loginEmail').value = savedEmail;
+            document.getElementById('loginCode').value = savedCode;
+            attemptLogin();
         }
+        
+        // بناء قائمة المستويات
+        buildLevelMenu();
+    });
 
+    function buildLevelMenu() {
         const levelList = document.getElementById('levelList');
+        levelList.innerHTML = ""; 
         for (let i = 1; i <= 12; i++) {
             levelList.innerHTML += `
                 <button class="level-btn" onclick="toggleDrawer(${i}, this)">LEVEL ${i}</button>
@@ -228,7 +240,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         }
-
+    }
         function toggleDrawer(lvl, btn) {
             document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
@@ -286,6 +298,17 @@ function launch(name) {
                 });
             }
         }
+        function loadUserData(user) {
+    document.getElementById('userAvatar').src = user.avatar;
+    document.getElementById('userName').innerText = user.name;
+    document.getElementById('globalRank').innerText = "#" + user.gRank;
+    document.getElementById('localRank').innerText = "#" + user.lRank;
+    document.getElementById('userTokens').innerText = user.tokens;
+    // التحقق من وجود النجوم وتحويلها لرقم عشري بسيط
+    const stars = parseFloat(user.stars) || 0;
+    document.getElementById('userStars').innerText = stars.toFixed(1);
+    document.getElementById('notifBanner').innerText = user.notification || "Welcome Agent!";
+}
     </script>
 </body>
 </html>
