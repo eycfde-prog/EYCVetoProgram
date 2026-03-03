@@ -127,28 +127,33 @@
 
  
 
-Function getStudentData
-// وظيفة جمع الإجابات فقط
+// وظيفة الزرار اللي جوه الأنجين (لو الطالب داس عليه بالغلط أو كاختصار)
+function collectAndSubmit() {
+    const data = window.getStudentData();
+    document.getElementById('status-msg').innerText = "✅ Responses saved to storage! Now click 'SUBMIT MY WORK' below.";
+    document.getElementById('status-msg').style.color = "blue";
+}
+
 window.getStudentData = function() {
     const inputs = document.querySelectorAll('.blank-input');
-    // تحويل الـ NodeList لمصفوفة من القيم فقط
     const studentAnswers = Array.from(inputs).map(i => i.value.trim());
     
-    // إرسال نسخة لشيت التخزين (Storage) فوراً كـ Backup
-    saveToStorage(studentAnswers);
-
-    return {
-        activity: activityID, // مثل Lis_1_test
-        answers: studentAnswers, // مصفوفة القيم ["John", "Sarah", ...]
-        email: "dananeer.ezz@gmail.com" // افتراضي حالياً
+    const payload = {
+        email: "dananeer.ezz@gmail.com",
+        activity: activityID,
+        answers: studentAnswers
     };
+
+    saveToStorage(payload); // إرسال النسخة الاحتياطية
+    return payload;
 };
 
-function saveToStorage(data) {
+function saveToStorage(payload) {
     const storageScriptURL = "https://script.google.com/macros/s/AKfycbyUJ9mRlQ3UVwEVemSBdXi4gv2hEabW51XCDgLBxKAXDGrEViji97bORBl_fgmoZWMf/exec";
     fetch(storageScriptURL, {
         method: "POST",
-        body: JSON.stringify({type: "storage", answers: data, activity: activityID})
+        mode: "no-cors", // مهم جداً عشان متوقفش الكود لو في مشاكل تصاريح
+        body: JSON.stringify(payload)
     });
 }
 
@@ -156,3 +161,4 @@ function saveToStorage(data) {
 </body>
 
 </html>
+
