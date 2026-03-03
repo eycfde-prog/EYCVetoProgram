@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EYC Universal Engine</title>
+    <style>
+        :root { --primary: #2563eb; --success: #10b981; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Player Styles */
+        .audio-container { 
+            position: sticky; top: 0; background: white; width: 100%; max-width: 600px;
+            padding: 15px; border-radius: 50px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            display: none; align-items: center; justify-content: space-around; margin-bottom: 30px; z-index: 100;
+        }
+        .control-btn { background: #1e293b; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .control-btn:hover { background: var(--primary); transform: scale(1.1); }
+        #timer { font-weight: bold; color: #64748b; min-width: 50px; }
+
+        /* Content Styles */
+        #content-area { width: 100%; max-width: 800px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); min-height: 400px; }
+        .line { margin-bottom: 20px; font-size: 1.1rem; line-height: 1.8; display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+        .speaker { font-weight: bold; color: var(--primary); min-width: 30px; }
+        
+        /* Inputs Styles */
+        .blank-input { 
+            border: none; border-bottom: 2px solid #cbd5e1; outline: none; 
+            padding: 2px 10px; font-size: 1rem; color: #ef4444; font-weight: bold; 
+            text-align: center; width: 120px; transition: 0.3s;
+        }
+        .blank-input:focus { border-bottom-color: var(--primary); background: #f0f7ff; }
+
+        /* Footer */
+        .footer { margin-top: 50px; width: 100%; max-width: 800px; text-align: center; }
+        .submit-btn { background: var(--success); color: white; border: none; padding: 15px 50px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; }
+        .submit-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        
+        #status-msg { margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="audioPlayer" class="audio-container">
+        <button class="control-btn" onclick="skip(-5)">⏪</button>
+        <button class="control-btn" id="playBtn" onclick="togglePlay()">▶️</button>
+        <button class="control-btn" onclick="skip(5)">⏩</button>
+        <span id="timer">00:00</span>
+        <audio id="mainAudio"></audio>
+    </div>
+
+    <div id="content-area">
+        <h2 id="activity-title" style="text-align: center; color: #1e293b;">Loading Activity...</h2>
+        <div id="dynamic-content"></div>
+    </div>
+
+    <div class="footer">
+        <button class="submit-btn" onclick="collectAndSubmit()">SUBMIT WORK</button>
+        <div id="status-msg"></div>
+    </div>
+
+    <script>
+        const audio = document.getElementById('mainAudio');
+        const playBtn = document.getElementById('playBtn');
+        const dynamicContent = document.getElementById('dynamic-content');
+        const audioPlayerUI = document.getElementById('audioPlayer');
+
+        // 1. Get Activity ID from URL (?activity=Lis_1)
+        const params = new URLSearchParams(window.location.search);
+        const activityID = params.get('activity');
+
+        if (activityID) {
+            fetch(`data/${activityID}.json`)
+                .then(res => res.json())
+                .then(data => initActivity(data))
+                .catch(err => {
+                    document.getElementById('activity-title').innerText = "Activity Not Found";
+                    console.error("Error loading JSON:", err);
+                });
+        }
+
+        // 2. Initialize Activity based on Type
+        function initActivity(data) {
+            document.getElementById('activity-title').innerText = data.title || "EYC Activity";
+            
+            if (data.type === "listening") {
+                audioPlayerUI.style.display = 'flex';
+                audio.src = data.audioUrl;
+                renderListening(data.dialogue);
+            } else {
+                // Future types like 'quiz' or 'reading' will go here
+                dynamicContent.innerHTML = "<p>Activity type not supported yet.</p>";
+            }
+        }
+
+        // 3. Render Listening Dialogue with Blanks
+        function renderListening(dialogue) {
+            let html = '';
+            dialogue.forEach(line => {
+                // Regex to find [word] and replace with input
+                const processedText = line.text.replace(/\[(.*?)\]/g, 
+                    `<input type="text" class="blank-input" data-ans="$1" placeholder="...">`);
+                
+                html += `
+                    <div class="line">
+                        <span class="speaker">${line.speaker}:</span>
+                        <span>${processedText}</span>
+                    </div>
+                `;
+            });
+            dynamicContent.innerHTML = html;
+        }
+
+        // 4. Audio Controls
+        function togglePlay() {
+            if (audio.paused) { audio.play(); playBtn.innerText = "⏸️"; }
+            else { audio.pause(); playBtn.innerText = "▶️"; }
+        }
+
+        function skip(seconds) { audio.currentTime += seconds; }
+
+        audio.ontimeupdate = () => {
+            const m = Math.floor(audio.currentTime / 60);
+            const s = Math.floor(audio.currentTime % 60);
+            document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+        };
+
+        // 5. Submit Logic (Ready for Google Sheets)
+        function collectAndSubmit() {
+            const inputs = document.querySelectorAll('.blank-input');
+            const answers = Array.from(inputs).map(i => ({
+                studentInput: i.value,
+                correctAnswer: i.dataset.ans
+            }));
+
+            console.log("Submitting to Teacher...", answers);
+            document.getElementById('status-msg').innerText = "✅ Work Submitted Successfully!";
+            document.getElementById('status-msg').style.color = "green";
+            
+            // Here we will add the Google Sheets Apps Script link later
+        }
+    </script>
+</body>
+</html>
