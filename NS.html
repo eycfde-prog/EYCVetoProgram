@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EYC VETO - Agent Registration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --gold: #10b981; --bg: #020617; --card: #0f172a; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: white; margin: 0; overflow-x: hidden; }
+        canvas { position: fixed; top: 0; left: 0; z-index: -1; }
+        
+        .container { display: flex; max-width: 1000px; margin: 50px auto; background: var(--card); border-radius: 20px; overflow: hidden; box-shadow: 0 0 30px rgba(0,0,0,0.5); border: 1px solid #1e293b; min-height: 600px; }
+        .avatar-section { flex: 1; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid #1e293b; padding: 20px; }
+        .form-section { flex: 1.5; padding: 40px; position: relative; }
+        
+        #avatar-container { width: 250px; height: 250px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--gold); }
+        #avatar-img { width: 100%; height: auto; }
+        
+        .step { display: none; }
+        .step.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        
+        h2 { color: var(--gold); letter-spacing: 2px; text-transform: uppercase; }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #888; }
+        input, select { width: 100%; padding: 12px; background: #020617; border: 1px solid #1e293b; color: white; border-radius: 8px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
+        
+        button { background: var(--gold); color: black; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+        button:hover { filter: brightness(1.2); transform: translateY(-2px); }
+        .prev-btn { background: transparent; color: #888; border: 1px solid #1e293b; margin-top: 10px; }
+        
+        .loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--card); display: none; align-items: center; justify-content: center; z-index: 100; flex-direction: column; }
+        .success-card { text-align: center; }
+        .code-box { background: #000; padding: 20px; border-radius: 12px; border: 1px dashed var(--gold); margin: 20px 0; font-size: 1.5rem; letter-spacing: 3px; color: var(--gold); }
+    </style>
+</head>
+<body>
+
+<canvas id="starCanvas"></canvas>
+
+<div class="container">
+    <div class="avatar-section">
+        <div id="avatar-container">
+            <img id="avatar-img" src="https://avataaars.io/?avatarStyle=Transparent" alt="Avatar">
+        </div>
+        <h3 id="display-name" style="margin-top: 20px;">NEW AGENT</h3>
+    </div>
+
+    <div class="form-section">
+        <div class="loading-overlay" id="loader">
+            <i class="fas fa-spinner fa-spin fa-3x" style="color: var(--gold);"></i>
+            <p style="margin-top: 15px;">UPLOADING TO DATABASE...</p>
+        </div>
+
+        <form id="registrationForm">
+            <div class="step active" id="step1">
+                <h2>01. Identity</h2>
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="name" placeholder="Agent Full Name" required oninput="document.getElementById('display-name').innerText = this.value">
+                </div>
+                <button type="button" onclick="nextStep(2)">Proceed</button>
+            </div>
+
+            <div class="step" id="step2">
+                <h2>02. Intelligence</h2>
+                <div class="input-group">
+                    <label>Google Email</label>
+                    <input type="email" id="email" placeholder="agent@gmail.com" required>
+                </div>
+                <div class="input-group">
+                    <label>Age</label>
+                    <input type="number" id="age" placeholder="Age" required>
+                </div>
+                <button type="button" onclick="nextStep(3)">Next</button>
+                <button type="button" class="prev-btn" onclick="nextStep(1)">Back</button>
+            </div>
+
+            <div class="step" id="step3">
+                <h2>03. Operations Schedule</h2>
+                <div class="input-group">
+                    <label>Select Group (Day & Time)</label>
+                    <select id="groupSelection" required></select>
+                </div>
+                <button type="button" onclick="nextStep(4)">Customize Avatar</button>
+                <button type="button" class="prev-btn" onclick="nextStep(2)">Back</button>
+            </div>
+
+            <div class="step" id="step4">
+                <h2>04. Tactical Gear</h2>
+                <div class="input-group">
+                    <label>Top Style</label>
+                    <select id="topType" onchange="updateAvatar()"></select>
+                </div>
+                <div class="input-group">
+                    <label>Clothing</label>
+                    <select id="clotheType" onchange="updateAvatar()"></select>
+                </div>
+                <div class="input-group">
+                    <label>Expression</label>
+                    <select id="eyeType" onchange="updateAvatar()"></select>
+                </div>
+                <button type="submit">Complete Mission</button>
+                <button type="button" class="prev-btn" onclick="nextStep(3)">Back</button>
+            </div>
+        </form>
+
+        <div id="success-card" style="display:none;" class="success-card">
+            <h2 style="color: var(--gold);">MISSION ACCOMPLISHED</h2>
+            <p>Welcome to the Veto Program. Your unique code is:</p>
+            <div class="code-box" id="agent-code">----</div>
+            <button onclick="copyAndEnter()" style="background: #fff;">Copy Code & Enter Dashboard</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzEnyqclVFDSg09UVzxupUpX40qJxd1xLZFJdTBRlV-q59-kMpklmwgAQH1CxvUQaJm/exec"; 
+
+    // Initialize Group Options (Every 2 hours)
+    function initGroups() {
+        const days = ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"];
+        const times = ["12:00 PM", "02:00 PM", "04:00 PM", "06:00 PM", "08:00 PM"];
+        const select = document.getElementById('groupSelection');
+        days.forEach(d => times.forEach(t => {
+            let opt = document.createElement('option');
+            opt.value = `${d} ${t}`;
+            opt.innerText = `${d} - ${t}`;
+            select.appendChild(opt);
+        }));
+    }
+
+    // Avatar Logic
+    function populateSelect(id, options) {
+        const s = document.getElementById(id);
+        options.forEach(o => s.innerHTML += `<option value="${o}">${o}</option>`);
+    }
+
+    function updateAvatar() {
+        const top = document.getElementById('topType').value;
+        const clothe = document.getElementById('clotheType').value;
+        const eye = document.getElementById('eyeType').value;
+        const url = `https://avataaars.io/?avatarStyle=Transparent&topType=${top}&clotheType=${clothe}&eyeType=${eye}&accessoriesType=Blank&facialHairType=Blank&mouthType=Default&skinColor=Tanned`;
+        document.getElementById('avatar-img').src = url;
+    }
+
+    function nextStep(n) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step' + n).classList.add('active');
+    }
+
+    // Submit Form
+    document.getElementById('registrationForm').onsubmit = async (e) => {
+        e.preventDefault();
+        document.getElementById('loader').style.display = 'flex';
+
+        const data = {
+            action: "signup",
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            age: document.getElementById('age').value,
+            group: document.getElementById('groupSelection').value,
+            avatar: document.getElementById('avatar-img').src
+        };
+
+        try {
+            const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
+            const result = await res.json();
+            if(result.status === "success") {
+                document.getElementById('registrationForm').style.display = 'none';
+                document.getElementById('success-card').style.display = 'block';
+                document.getElementById('agent-code').innerText = result.code;
+                localStorage.setItem('veto_email', data.email);
+            }
+        } catch(err) { alert("Error connecting to server"); }
+        document.getElementById('loader').style.display = 'none';
+    };
+
+    function copyAndEnter() {
+        const code = document.getElementById('agent-code').innerText;
+        navigator.clipboard.writeText(code);
+        alert("Code Copied!");
+        window.location.href = 'VetoO.html';
+    }
+
+    // Init
+    window.onload = () => {
+        initGroups();
+        populateSelect('topType', ["ShortHairShortFlat", "LongHairCurvy", "Hijab", "ShortHairDreads01", "NoHair"]);
+        populateSelect('clotheType', ["BlazerShirt", "CollarSweater", "GraphicShirt", "Hoodie"]);
+        populateSelect('eyeType', ["Default", "Happy", "Wink", "Hearts"]);
+        updateAvatar();
+    };
+</script>
+</body>
+</html>
