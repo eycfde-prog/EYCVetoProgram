@@ -224,7 +224,7 @@
             const frame = document.getElementById('activityFrame');
             if (frame.contentWindow && typeof frame.contentWindow.getStudentData === 'function') {
                 const data = frame.contentWindow.getStudentData();
-                const gradingScriptURL = "https://script.google.com/macros/s/AKfycbwqyj_BtUi3FpE3eNrdWY_3bXux4t-g202aNnwUBVAc_-MGRZTRPCzzynnrQGuzRE1NFw/exec";
+                const gradingScriptURL = "https://script.google.com/macros/s/AKfycbzsWxHYqzsttwds-6JwDjuKd8V6nT5DwhjxwyMyP_Y9EcIiG37AmD608Gsx0qkV-Y4l9w/exec";
                 
                 fetch(gradingScriptURL, {
                     method: "POST",
