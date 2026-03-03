@@ -97,12 +97,12 @@
                 VERIFY IDENTITY
             </button>
 
-<p style="margin-top: 20px; font-size: 0.85rem; color: #888;">
-    Forgot your code? <a href="#" onclick="forgotCode()" style="color: #10b981; text-decoration: none; font-weight: bold;">Recover Code</a>
-</p>
-<p style="margin-top: 10px; font-size: 0.85rem; color: #888;">
-    Not an agent yet? <a href="NS.html" style="color: #10b981; text-decoration: none; font-weight: bold;">Sign Up Here</a>
-</p>
+            <p style="margin-top: 20px; font-size: 0.85rem; color: #888;">
+                Forgot your code? <a href="#" onclick="forgotCode()" style="color: #10b981; text-decoration: none; font-weight: bold;">Recover Code</a>
+            </p>
+            <p style="margin-top: 10px; font-size: 0.85rem; color: #888;">
+                Not an agent yet? <a href="NS.html" style="color: #10b981; text-decoration: none; font-weight: bold;">Sign Up Here</a>
+            </p>
         </div>
     </div>
 
@@ -126,8 +126,8 @@
 
         <div id="levelList"></div>
         <button onclick="logout()" style="margin-top: auto; padding: 15px; background: #dc2626; color: white; border: none; cursor: pointer; font-weight: bold;">
-    <i class="fas fa-sign-out-alt"></i> LOGOUT
-</button>
+            <i class="fas fa-sign-out-alt"></i> LOGOUT
+        </button>
     </aside>
 
     <main class="stage">
@@ -146,10 +146,9 @@
         </div>
     </div>
 
-
-<script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4yQtTi7ou-mo72QcDDNXRRkaBhNoJpp65MYsC0xqp262V2C7WMnCRf-vETx7Q2-fahw/exec";
-    const GRADING_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKKRXwGLnEjnCVr86UG6EjDfjFKySrvzJkECj7doD8ZbUlmEDHyvO7HgHtshQoX968Vw/exec";
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4yQtTi7ou-mo72QcDDNXRRkaBhNoJpp65MYsC0xqp262V2C7WMnCRf-vETx7Q2-fahw/exec";
+        const GRADING_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKKRXwGLnEjnCVr86UG6EjDfjFKySrvzJkECj7doD8ZbUlmEDHyvO7HgHtshQoX968Vw/exec";
 
         const syllabus = {
             1: { 1: ["H W", "Lis 1 test", "Gr 1 test"], 2: ["H W", "Gr 2 test", "Lis 2 test", "Vocab 1 study"], 3: ["H W", "Gr 3 test", "Lis 3 test", "Vocab 2 study"], 4: ["H W", "Gr 4 test", "Lis 4 test", "Reading 1 Rec"] },
@@ -166,87 +165,89 @@
             12: { 1: ["H W", "gp study"], 2: ["H W"], 3: ["H W", "gp study", "gp sending"], 4: ["H W", "gp sending", "gp study"] }
         };
 
-async function attemptLogin() {
-        const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-        const code = document.getElementById('loginCode').value.trim();
-        const btn = document.getElementById('loginBtn');
-
-        if (!email || !code) {
-            alert("Agent, we need both Email and Code to proceed.");
-            return;
+        function getActType(name) {
+            const n = name.toLowerCase();
+            if (n.includes('test')) return 'type-test';
+            if (n.includes('study')) return 'type-study';
+            if (n.includes('hw') || n.includes('h w')) return 'type-hw';
+            if (n.includes('rec')) return 'type-rec';
+            if (n.includes('gp')) return 'type-gp';
+            return 'type-special';
         }
 
-        btn.innerText = "VERIFYING IDENTITY...";
-        btn.disabled = true;
+        async function attemptLogin() {
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const code = document.getElementById('loginCode').value.trim();
+            const btn = document.getElementById('loginBtn');
 
-        try {
-            // إضافة التحقق من صحة الرابط بإضافة معاملات عشوائية لمنع الكاش
-            const finalUrl = `${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&t=${new Date().getTime()}`;
-            
-            const res = await fetch(finalUrl);
-            const user = await res.json();
+            if (!email || !code) {
+                alert("Agent, we need both Email and Code to proceed.");
+                return;
+            }
 
-            if (user.error) {
-                alert("Login Error: " + user.error);
+            btn.innerText = "VERIFYING IDENTITY...";
+            btn.disabled = true;
+
+            try {
+                const finalUrl = `${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&t=${new Date().getTime()}`;
+                const res = await fetch(finalUrl);
+                const user = await res.json();
+
+                if (user.error) {
+                    alert("Login Error: " + user.error);
+                    btn.innerText = "VERIFY IDENTITY";
+                    btn.disabled = false;
+                    localStorage.removeItem('veto_email');
+                    localStorage.removeItem('veto_code');
+                } else {
+                    localStorage.setItem('veto_email', email);
+                    localStorage.setItem('veto_code', code);
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    loadUserData(user);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Connection Error. Please check your internet or Script URL.");
                 btn.innerText = "VERIFY IDENTITY";
                 btn.disabled = false;
-                // إذا كان هناك خطأ، نحذف البيانات المخزنة لإجبار المستخدم على إدخالها صح
-                localStorage.removeItem('veto_email');
-                localStorage.removeItem('veto_code');
-            } else {
-                localStorage.setItem('veto_email', email);
-                localStorage.setItem('veto_code', code);
-                
-                document.getElementById('loginOverlay').style.display = 'none';
-                loadUserData(user); // استدعاء الدالة التي كتبناها بالأعلى
             }
-        } catch (e) {
-            console.error(e);
-            alert("Connection Error. Please check your internet or Script URL.");
-            btn.innerText = "VERIFY IDENTITY";
-            btn.disabled = false;
         }
-    }
 
-    // دالة تحديث واجهة المستخدم بالبيانات القادمة من جوجل شيت
-    function loadUserData(user) {
-        document.getElementById('userAvatar').src = user.avatar || "https://avataaars.io/?avatarStyle=Transparent";
-        document.getElementById('userName').innerText = user.name || "Agent";
-        document.getElementById('globalRank').innerText = "#" + (user.gRank || "--");
-        document.getElementById('localRank').innerText = "#" + (user.lRank || "--");
-        document.getElementById('userTokens').innerText = user.tokens || 0;
-        
-        const stars = parseFloat(user.stars) || 0;
-        document.getElementById('userStars').innerText = stars.toFixed(1);
-        document.getElementById('notifBanner').innerText = user.notification || "Welcome Agent!";
-    }
-
-    // البقاء على تسجيل الدخول
-    window.addEventListener('DOMContentLoaded', () => {
-        const savedEmail = localStorage.getItem('veto_email');
-        const savedCode = localStorage.getItem('veto_code');
-        if (savedEmail && savedCode) {
-            document.getElementById('loginEmail').value = savedEmail;
-            document.getElementById('loginCode').value = savedCode;
-            attemptLogin();
+        function loadUserData(user) {
+            document.getElementById('userAvatar').src = user.avatar || "https://avataaars.io/?avatarStyle=Transparent";
+            document.getElementById('userName').innerText = user.name || "Agent";
+            document.getElementById('globalRank').innerText = "#" + (user.gRank || "--");
+            document.getElementById('localRank').innerText = "#" + (user.lRank || "--");
+            document.getElementById('userTokens').innerText = user.tokens || 0;
+            const stars = parseFloat(user.stars) || 0;
+            document.getElementById('userStars').innerText = stars.toFixed(1);
+            document.getElementById('notifBanner').innerText = user.notification || "Welcome Agent!";
         }
-        
-        // بناء قائمة المستويات
-        buildLevelMenu();
-    });
 
-    function buildLevelMenu() {
-        const levelList = document.getElementById('levelList');
-        levelList.innerHTML = ""; 
-        for (let i = 1; i <= 12; i++) {
-            levelList.innerHTML += `
-                <button class="level-btn" onclick="toggleDrawer(${i}, this)">LEVEL ${i}</button>
-                <div class="drawer" id="drawer-${i}">
-                    ${[1,2,3,4].map(s => `<button class="sess-btn" onclick="loadSession(${i}, ${s}, this)">Session ${s}</button>`).join('')}
-                </div>
-            `;
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedEmail = localStorage.getItem('veto_email');
+            const savedCode = localStorage.getItem('veto_code');
+            if (savedEmail && savedCode) {
+                document.getElementById('loginEmail').value = savedEmail;
+                document.getElementById('loginCode').value = savedCode;
+                attemptLogin();
+            }
+            buildLevelMenu();
+        });
+
+        function buildLevelMenu() {
+            const levelList = document.getElementById('levelList');
+            levelList.innerHTML = ""; 
+            for (let i = 1; i <= 12; i++) {
+                levelList.innerHTML += `
+                    <button class="level-btn" onclick="toggleDrawer(${i}, this)">LEVEL ${i}</button>
+                    <div class="drawer" id="drawer-${i}">
+                        ${[1,2,3,4].map(s => `<button class="sess-btn" onclick="loadSession(${i}, ${s}, this)">Session ${s}</button>`).join('')}
+                    </div>
+                `;
+            }
         }
-    }
+
         function toggleDrawer(lvl, btn) {
             document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
@@ -260,21 +261,33 @@ async function attemptLogin() {
             document.querySelectorAll('.sess-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             document.getElementById('path').innerText = `Level ${lvl} > Session ${sess}`;
+            
             const grid = document.getElementById('grid');
-            const acts = syllabus[lvl][sess] || [];
-            grid.innerHTML = acts.map(a => `<div class="act-card ${getActType(a)}" onclick="launch('${a}')">${a}</div>`).join('');
+            const title = document.getElementById('title');
+            title.innerText = `Level ${lvl} - Session ${sess}`;
+            
+            const acts = syllabus[lvl] ? syllabus[lvl][sess] : [];
+            
+            if (acts.length === 0) {
+                grid.innerHTML = "<p style='color:#888'>No activities assigned for this transmission yet.</p>";
+            } else {
+                grid.innerHTML = acts.map(a => `
+                    <div class="act-card ${getActType(a)}" onclick="launch('${a}', ${lvl}, ${sess})">
+                        ${a}
+                    </div>
+                `).join('');
+            }
         }
 
-function launch(name) {
-    const overlay = document.getElementById('overlay');
-    const frame = document.getElementById('activityFrame');
-    const fileName = name.replace(/\s+/g, '_');
-    const userEmail = localStorage.getItem('veto_email'); // سحب الإيميل المحفوظ
-    
-    // إرسال الإيميل مع الـ Activity في الـ URL
-    frame.src = `eycmainengine.html?activity=${fileName}&email=${userEmail}`;
-    overlay.style.display = 'flex';
-}
+        function launch(name, lvl, sess) {
+            const overlay = document.getElementById('overlay');
+            const frame = document.getElementById('activityFrame');
+            const fileName = name.replace(/\s+/g, '_');
+            const userEmail = localStorage.getItem('veto_email'); 
+            
+            frame.src = `eycmainengine.html?activity=${fileName}&email=${userEmail}&lvl=${lvl}&sess=${sess}`;
+            overlay.style.display = 'flex';
+        }
 
         function closeActivity() {
             document.getElementById('overlay').style.display = 'none';
@@ -304,44 +317,30 @@ function launch(name) {
                 });
             }
         }
-        function loadUserData(user) {
-    document.getElementById('userAvatar').src = user.avatar;
-    document.getElementById('userName').innerText = user.name;
-    document.getElementById('globalRank').innerText = "#" + user.gRank;
-    document.getElementById('localRank').innerText = "#" + user.lRank;
-    document.getElementById('userTokens').innerText = user.tokens;
-    // التحقق من وجود النجوم وتحويلها لرقم عشري بسيط
-    const stars = parseFloat(user.stars) || 0;
-    document.getElementById('userStars').innerText = stars.toFixed(1);
-    document.getElementById('notifBanner').innerText = user.notification || "Welcome Agent!";
-}
-    // دالة تسجيل الخروج
-function logout() {
-    if(confirm("Are you sure you want to log out, Agent?")) {
-        localStorage.removeItem('veto_email');
-        localStorage.removeItem('veto_code');
-        location.reload(); // لإعادة إظهار صفحة تسجيل الدخول
-    }
-}
 
-// دالة استعادة الكود
-async function forgotCode() {
-    const email = document.getElementById('loginEmail').value.trim();
-    if (!email) {
-        alert("Please enter your registered email first.");
-        return;
-    }
+        function logout() {
+            if(confirm("Are you sure you want to log out, Agent?")) {
+                localStorage.removeItem('veto_email');
+                localStorage.removeItem('veto_code');
+                location.reload();
+            }
+        }
 
-    if (!confirm(`Send recovery code to ${email}?`)) return;
-
-    try {
-        const res = await fetch(`${SCRIPT_URL}?action=forgotCode&email=${encodeURIComponent(email)}`);
-        const result = await res.json();
-        alert(result.message);
-    } catch (e) {
-        alert("Error connecting to the recovery server.");
-    }
-}
+        async function forgotCode() {
+            const email = document.getElementById('loginEmail').value.trim();
+            if (!email) {
+                alert("Please enter your registered email first.");
+                return;
+            }
+            if (!confirm(`Send recovery code to ${email}?`)) return;
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=forgotCode&email=${encodeURIComponent(email)}`);
+                const result = await res.json();
+                alert(result.message);
+            } catch (e) {
+                alert("Error connecting to the recovery server.");
+            }
+        }
     </script>
 </body>
 </html>
