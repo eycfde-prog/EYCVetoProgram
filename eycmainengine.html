@@ -125,20 +125,24 @@
             document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
         };
 
-        // 5. Submit Logic (Ready for Google Sheets)
-        function collectAndSubmit() {
-            const inputs = document.querySelectorAll('.blank-input');
-            const answers = Array.from(inputs).map(i => ({
-                studentInput: i.value,
-                correctAnswer: i.dataset.ans
-            }));
+ 
 
-            console.log("Submitting to Teacher...", answers);
-            document.getElementById('status-msg').innerText = "✅ Work Submitted Successfully!";
-            document.getElementById('status-msg').style.color = "green";
-            
-            // Here we will add the Google Sheets Apps Script link later
-        }
+Function getStudentData
+window.getStudentData = function() {
+    const inputs = document.querySelectorAll('.blank-input');
+    const results = Array.from(inputs).map(i => ({
+        typed: i.value,
+        correct: i.dataset.ans
+    }));
+    
+    // إرجاع البيانات لصفحة VetoO
+    return {
+        activity: activityID,
+        responses: results,
+        timestamp: new Date().toISOString()
+    };
+};
+
     </script>
 </body>
 </html>
