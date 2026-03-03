@@ -97,9 +97,12 @@
                 VERIFY IDENTITY
             </button>
 
-            <p style="margin-top: 25px; font-size: 0.85rem; color: #888;">
-                Not an agent yet? <a href="NS.html" style="color: #10b981; text-decoration: none; font-weight: bold;">Sign Up Here</a>
-            </p>
+<p style="margin-top: 20px; font-size: 0.85rem; color: #888;">
+    Forgot your code? <a href="#" onclick="forgotCode()" style="color: #10b981; text-decoration: none; font-weight: bold;">Recover Code</a>
+</p>
+<p style="margin-top: 10px; font-size: 0.85rem; color: #888;">
+    Not an agent yet? <a href="NS.html" style="color: #10b981; text-decoration: none; font-weight: bold;">Sign Up Here</a>
+</p>
         </div>
     </div>
 
@@ -122,6 +125,9 @@
         </div>
 
         <div id="levelList"></div>
+        <button onclick="logout()" style="margin-top: auto; padding: 15px; background: #dc2626; color: white; border: none; cursor: pointer; font-weight: bold;">
+    <i class="fas fa-sign-out-alt"></i> LOGOUT
+</button>
     </aside>
 
     <main class="stage">
@@ -143,7 +149,7 @@
 
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4yQtTi7ou-mo72QcDDNXRRkaBhNoJpp65MYsC0xqp262V2C7WMnCRf-vETx7Q2-fahw/exec";
-    const GRADING_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4yQtTi7ou-mo72QcDDNXRRkaBhNoJpp65MYsC0xqp262V2C7WMnCRf-vETx7Q2-fahw/exec";
+    const GRADING_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKKRXwGLnEjnCVr86UG6EjDfjFKySrvzJkECj7doD8ZbUlmEDHyvO7HgHtshQoX968Vw/exec";
 
         const syllabus = {
             1: { 1: ["H W", "Lis 1 test", "Gr 1 test"], 2: ["H W", "Gr 2 test", "Lis 2 test", "Vocab 1 study"], 3: ["H W", "Gr 3 test", "Lis 3 test", "Vocab 2 study"], 4: ["H W", "Gr 4 test", "Lis 4 test", "Reading 1 Rec"] },
@@ -308,6 +314,33 @@ function launch(name) {
     const stars = parseFloat(user.stars) || 0;
     document.getElementById('userStars').innerText = stars.toFixed(1);
     document.getElementById('notifBanner').innerText = user.notification || "Welcome Agent!";
+}
+    // دالة تسجيل الخروج
+function logout() {
+    if(confirm("Are you sure you want to log out, Agent?")) {
+        localStorage.removeItem('veto_email');
+        localStorage.removeItem('veto_code');
+        location.reload(); // لإعادة إظهار صفحة تسجيل الدخول
+    }
+}
+
+// دالة استعادة الكود
+async function forgotCode() {
+    const email = document.getElementById('loginEmail').value.trim();
+    if (!email) {
+        alert("Please enter your registered email first.");
+        return;
+    }
+
+    if (!confirm(`Send recovery code to ${email}?`)) return;
+
+    try {
+        const res = await fetch(`${SCRIPT_URL}?action=forgotCode&email=${encodeURIComponent(email)}`);
+        const result = await res.json();
+        alert(result.message);
+    } catch (e) {
+        alert("Error connecting to the recovery server.");
+    }
 }
     </script>
 </body>
