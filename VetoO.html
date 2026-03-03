@@ -72,20 +72,33 @@
         .main-submit-btn { background: var(--accent); color: white; border: none; padding: 12px 50px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1rem; transition: 0.2s; }
         .main-submit-btn:hover { filter: brightness(1.1); transform: scale(1.02); }
 
-        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: #0f172a; padding: 40px; border-radius: 20px; border: 1px solid var(--accent); text-align: center; width: 350px; }
+        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
     </style>
 </head>
 <body>
 
     <div id="loginOverlay">
-        <div class="login-box">
-            <h2 style="color: #10b981;">EYC VETO LOGIN</h2>
-            <p style="color: #888; font-size: 0.8rem;">Enter your registered Google Email</p>
-            <input type="email" id="loginEmail" placeholder="Email Address" style="width: 100%; padding: 12px; margin: 20px 0; background: #000; border: 1px solid #1e293b; color: white; border-radius: 8px;">
-            <button onclick="attemptLogin()" style="width: 100%; padding: 12px; background: #10b981; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">ACCESS COMMAND CENTER</button>
-            <p style="margin-top: 20px; font-size: 0.8rem; color: white;">
-                New Agent? <a href="NS.html" style="color: #10b981;">Register Here</a>
+        <div style="background: #0f172a; padding: 40px; border-radius: 20px; border: 1px solid #10b981; text-align: center; width: 380px; box-shadow: 0 0 50px rgba(16, 185, 129, 0.2);">
+            <div style="font-size: 3rem; color: #10b981; margin-bottom: 15px;"><i class="fas fa-user-shield"></i></div>
+            <h2 style="color: #fff; margin-bottom: 5px; letter-spacing: 2px;">AGENT LOGIN</h2>
+            <p style="color: #888; font-size: 0.8rem; margin-bottom: 25px;">Enter your credentials to access Veto</p>
+            
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="color: #10b981; font-size: 0.7rem; margin-left: 5px;">REGISTERED EMAIL</label>
+                <input type="email" id="loginEmail" placeholder="agent@gmail.com" style="width: 100%; padding: 12px; margin-top: 5px; background: #020617; border: 1px solid #1e293b; color: white; border-radius: 8px; outline: none;">
+            </div>
+
+            <div style="text-align: left; margin-bottom: 25px;">
+                <label style="color: #10b981; font-size: 0.7rem; margin-left: 5px;">AGENT CODE</label>
+                <input type="text" id="loginCode" placeholder="Enter your unique code" style="width: 100%; padding: 12px; margin-top: 5px; background: #020617; border: 1px solid #1e293b; color: white; border-radius: 8px; outline: none; text-align: center; letter-spacing: 3px;">
+            </div>
+
+            <button id="loginBtn" onclick="attemptLogin()" style="width: 100%; padding: 15px; background: #10b981; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; color: #000;">
+                VERIFY IDENTITY
+            </button>
+
+            <p style="margin-top: 25px; font-size: 0.85rem; color: #888;">
+                Not an agent yet? <a href="NS.html" style="color: #10b981; text-decoration: none; font-weight: bold;">Sign Up Here</a>
             </p>
         </div>
     </div>
@@ -129,7 +142,7 @@
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
-        const GRADING_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5nB6NFNZNpXM_i8_MKmt_ZOUOAIZ5zbn_it0OBqSezHHDU8_7RmU5Xatgy9p7Ffolwg/exec";
+        const GRADING_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4yQtTi7ou-mo72QcDDNXRRkaBhNoJpp65MYsC0xqp262V2C7WMnCRf-vETx7Q2-fahw/exec";
 
         const syllabus = {
             1: { 1: ["H W", "Lis 1 test", "Gr 1 test"], 2: ["H W", "Gr 2 test", "Lis 2 test", "Vocab 1 study"], 3: ["H W", "Gr 3 test", "Lis 3 test", "Vocab 2 study"], 4: ["H W", "Gr 4 test", "Lis 4 test", "Reading 1 Rec"] },
@@ -148,20 +161,47 @@
 
         async function attemptLogin() {
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-            if(!email) return alert("Email required!");
+            const codeInput = document.getElementById('loginCode');
+            const code = codeInput ? codeInput.value.trim() : null;
+            const btn = document.getElementById('loginBtn');
+
+            if(!email) {
+                alert("Please provide Email.");
+                return;
+            }
+
+            if(btn) {
+                btn.innerText = "AUTHENTICATING...";
+                btn.style.opacity = "0.7";
+                btn.disabled = true;
+            }
             
             try {
-                const res = await fetch(SCRIPT_URL + "?email=" + email);
+                const url = code ? `${SCRIPT_URL}?email=${email}&code=${code}` : `${SCRIPT_URL}?email=${email}`;
+                const res = await fetch(url);
                 const user = await res.json();
+
                 if(user.error) {
-                    alert("Agent not found! Please register first.");
+                    alert("Access Denied: " + user.error);
+                    if(btn) {
+                        btn.innerText = "VERIFY IDENTITY";
+                        btn.style.opacity = "1";
+                        btn.disabled = false;
+                    }
                 } else {
                     localStorage.setItem('veto_email', email);
+                    if(code) localStorage.setItem('veto_code', code);
+                    
                     document.getElementById('loginOverlay').style.display = 'none';
                     loadUserData(user);
                 }
             } catch(e) {
-                alert("Connection error. Check script ID.");
+                alert("Connection error. Check your Script URL.");
+                if(btn) {
+                    btn.innerText = "VERIFY IDENTITY";
+                    btn.style.opacity = "1";
+                    btn.disabled = false;
+                }
             }
         }
 
@@ -175,13 +215,17 @@
             document.getElementById('notifBanner').innerText = user.notification;
         }
 
-        window.onload = () => {
+        window.addEventListener('DOMContentLoaded', () => {
             const savedEmail = localStorage.getItem('veto_email');
+            const savedCode = localStorage.getItem('veto_code');
             if(savedEmail) {
                 document.getElementById('loginEmail').value = savedEmail;
+                if(savedCode && document.getElementById('loginCode')) {
+                    document.getElementById('loginCode').value = savedCode;
+                }
                 attemptLogin();
             }
-        };
+        });
 
         function getActType(name) {
             const n = name.toLowerCase();
