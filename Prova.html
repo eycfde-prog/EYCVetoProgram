@@ -1,53 +1,71 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صفحة الأزرار العشرة - EYC Team</title>
+    <title>EYC Team - Luxury Buttons</title>
     <style>
+        /* إعدادات الخلفية العامة */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background-color: #f4f7f6;
+            background-color: #0f0f0f; /* أسود داكن جداً */
+            color: #d4af37; /* لون ذهبي أساسي */
         }
 
+        /* حاوية الأزرار */
         .button-container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* صفين من الأزرار */
-            gap: 15px;
-            padding: 20px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding: 40px;
+            background: #1a1a1a; /* رمادي غامق لتمييز الحاوية */
+            border-radius: 20px;
+            border: 1px solid #d4af37; /* إطار ذهبي نحيف */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(212, 175, 55, 0.1);
         }
 
+        /* تصميم الزر */
         .btn {
             display: inline-block;
-            padding: 12px 25px;
+            padding: 15px 30px;
             font-size: 16px;
-            color: white;
-            background-color: #007bff;
+            font-weight: 600;
+            color: #0f0f0f; /* نص أسود ليظهر فوق الذهبي */
+            background: linear-gradient(45deg, #d4af37, #f9e27d); /* تدرج ذهبي */
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 10px;
             text-align: center;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: all 0.3s ease;
             border: none;
             cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
+        /* تأثيرات عند تمرير الماوس */
         .btn:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
+            background: linear-gradient(45deg, #f9e27d, #d4af37);
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+            color: #000;
+        }
+
+        /* تأثير عند الضغط */
+        .btn:active {
+            transform: translateY(0);
         }
 
         /* تحسين العرض للهواتف */
         @media (max-width: 480px) {
             .button-container {
                 grid-template-columns: 1fr;
+                width: 80%;
             }
         }
     </style>
@@ -55,16 +73,16 @@
 <body>
 
     <div class="button-container">
-        <a href="" class="btn">الزر الأول</a>
-        <a href="" class="btn">الزر الثاني</a>
-        <a href="" class="btn">الزر الثالث</a>
-        <a href="" class="btn">الزر الرابع</a>
-        <a href="" class="btn">الزر الخامس</a>
-        <a href="" class="btn">الزر السادس</a>
-        <a href="" class="btn">الزر السابع</a>
-        <a href="" class="btn">الزر الثامن</a>
-        <a href="" class="btn">الزر التاسع</a>
-        <a href="" class="btn">الزر العاشر</a>
+        <a href="VetoO.html" class="btn">Button One</a>
+        <a href="" class="btn">Button Two</a>
+        <a href="" class="btn">Button Three</a>
+        <a href="" class="btn">Button Four</a>
+        <a href="" class="btn">Button Five</a>
+        <a href="" class="btn">Button Six</a>
+        <a href="" class="btn">Button Seven</a>
+        <a href="" class="btn">Button Eight</a>
+        <a href="" class="btn">Button Nine</a>
+        <a href="" class="btn">Button Ten</a>
     </div>
 
 </body>
