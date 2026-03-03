@@ -173,7 +173,7 @@ async function attemptLogin() {
     btn.disabled = true;
 
     // تأكد من وضع الـ ID الخاص بسكريبت الـ doGet هنا
-    const LOGIN_URL = "https://script.google.com/macros/s/AKfycbz5nB6NFNZNpXM_i8_MKmt_ZOUOAIZ5zbn_it0OBqSezHHDU8_7RmU5Xatgy9p7Ffolwg/exec"; 
+    const LOGIN_URL = "https://script.google.com/macros/s/AKfycbz4yQtTi7ou-mo72QcDDNXRRkaBhNoJpp65MYsC0xqp262V2C7WMnCRf-vETx7Q2-fahw/exec"; 
 
     try {
         const res = await fetch(`${LOGIN_URL}?email=${email}&code=${code}`);
@@ -247,13 +247,16 @@ window.addEventListener('DOMContentLoaded', () => {
             grid.innerHTML = acts.map(a => `<div class="act-card ${getActType(a)}" onclick="launch('${a}')">${a}</div>`).join('');
         }
 
-        function launch(name) {
-            const overlay = document.getElementById('overlay');
-            const frame = document.getElementById('activityFrame');
-            const fileName = name.replace(/\s+/g, '_');
-            frame.src = `eycmainengine.html?activity=${fileName}`;
-            overlay.style.display = 'flex';
-        }
+function launch(name) {
+    const overlay = document.getElementById('overlay');
+    const frame = document.getElementById('activityFrame');
+    const fileName = name.replace(/\s+/g, '_');
+    const userEmail = localStorage.getItem('veto_email'); // سحب الإيميل المحفوظ
+    
+    // إرسال الإيميل مع الـ Activity في الـ URL
+    frame.src = `eycmainengine.html?activity=${fileName}&email=${userEmail}`;
+    overlay.style.display = 'flex';
+}
 
         function closeActivity() {
             document.getElementById('overlay').style.display = 'none';
