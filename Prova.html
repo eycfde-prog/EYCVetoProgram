@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة الأزرار العشرة - EYC Team</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f7f6;
+        }
+
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* صفين من الأزرار */
+            gap: 15px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            font-size: 16px;
+            color: white;
+            background-color: #007bff;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        /* تحسين العرض للهواتف */
+        @media (max-width: 480px) {
+            .button-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="button-container">
+        <a href="" class="btn">الزر الأول</a>
+        <a href="" class="btn">الزر الثاني</a>
+        <a href="" class="btn">الزر الثالث</a>
+        <a href="" class="btn">الزر الرابع</a>
+        <a href="" class="btn">الزر الخامس</a>
+        <a href="" class="btn">الزر السادس</a>
+        <a href="" class="btn">الزر السابع</a>
+        <a href="" class="btn">الزر الثامن</a>
+        <a href="" class="btn">الزر التاسع</a>
+        <a href="" class="btn">الزر العاشر</a>
+    </div>
+
+</body>
+</html>
