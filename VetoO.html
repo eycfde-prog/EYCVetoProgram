@@ -159,74 +159,55 @@
             12: { 1: ["H W", "gp study"], 2: ["H W"], 3: ["H W", "gp study", "gp sending"], 4: ["H W", "gp sending", "gp study"] }
         };
 
-        async function attemptLogin() {
-            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-            const codeInput = document.getElementById('loginCode');
-            const code = codeInput ? codeInput.value.trim() : null;
-            const btn = document.getElementById('loginBtn');
+async function attemptLogin() {
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const code = document.getElementById('loginCode').value.trim();
+    const btn = document.getElementById('loginBtn');
 
-            if(!email) {
-                alert("Please provide Email.");
-                return;
-            }
+    if (!email || !code) {
+        alert("Agent, we need both Email and Code to proceed.");
+        return;
+    }
 
-            if(btn) {
-                btn.innerText = "AUTHENTICATING...";
-                btn.style.opacity = "0.7";
-                btn.disabled = true;
-            }
+    btn.innerText = "VERIFYING IDENTITY...";
+    btn.disabled = true;
+
+    // تأكد من وضع الـ ID الخاص بسكريبت الـ doGet هنا
+    const LOGIN_URL = "https://script.google.com/macros/s/AKfycbz5nB6NFNZNpXM_i8_MKmt_ZOUOAIZ5zbn_it0OBqSezHHDU8_7RmU5Xatgy9p7Ffolwg/exec"; 
+
+    try {
+        const res = await fetch(`${LOGIN_URL}?email=${email}&code=${code}`);
+        const user = await res.json();
+
+        if (user.error) {
+            alert(user.error);
+            btn.innerText = "VERIFY IDENTITY";
+            btn.disabled = false;
+        } else {
+            // حفظ البيانات للدخول التلقائي المستقبلي
+            localStorage.setItem('veto_email', email);
+            localStorage.setItem('veto_code', code);
             
-            try {
-                const url = code ? `${SCRIPT_URL}?email=${email}&code=${code}` : `${SCRIPT_URL}?email=${email}`;
-                const res = await fetch(url);
-                const user = await res.json();
-
-                if(user.error) {
-                    alert("Access Denied: " + user.error);
-                    if(btn) {
-                        btn.innerText = "VERIFY IDENTITY";
-                        btn.style.opacity = "1";
-                        btn.disabled = false;
-                    }
-                } else {
-                    localStorage.setItem('veto_email', email);
-                    if(code) localStorage.setItem('veto_code', code);
-                    
-                    document.getElementById('loginOverlay').style.display = 'none';
-                    loadUserData(user);
-                }
-            } catch(e) {
-                alert("Connection error. Check your Script URL.");
-                if(btn) {
-                    btn.innerText = "VERIFY IDENTITY";
-                    btn.style.opacity = "1";
-                    btn.disabled = false;
-                }
-            }
+            document.getElementById('loginOverlay').style.display = 'none';
+            loadUserData(user);
         }
+    } catch (e) {
+        alert("Communication error with the server.");
+        btn.innerText = "VERIFY IDENTITY";
+        btn.disabled = false;
+    }
+}
 
-        function loadUserData(user) {
-            document.getElementById('userAvatar').src = user.avatar;
-            document.getElementById('userName').innerText = user.name;
-            document.getElementById('globalRank').innerText = "#" + user.gRank;
-            document.getElementById('localRank').innerText = "#" + user.lRank;
-            document.getElementById('userTokens').innerText = user.tokens;
-            document.getElementById('userStars').innerText = user.stars.toFixed(1);
-            document.getElementById('notifBanner').innerText = user.notification;
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedEmail = localStorage.getItem('veto_email');
-            const savedCode = localStorage.getItem('veto_code');
-            if(savedEmail) {
-                document.getElementById('loginEmail').value = savedEmail;
-                if(savedCode && document.getElementById('loginCode')) {
-                    document.getElementById('loginCode').value = savedCode;
-                }
-                attemptLogin();
-            }
-        });
-
+// تعديل دالة التحقق عند فتح الصفحة
+window.addEventListener('DOMContentLoaded', () => {
+    const savedEmail = localStorage.getItem('veto_email');
+    const savedCode = localStorage.getItem('veto_code');
+    if (savedEmail && savedCode) {
+        document.getElementById('loginEmail').value = savedEmail;
+        document.getElementById('loginCode').value = savedCode;
+        attemptLogin(); // دخول تلقائي
+    }
+});
         function getActType(name) {
             const n = name.toLowerCase();
             if (n.includes('test')) return 'type-test';
