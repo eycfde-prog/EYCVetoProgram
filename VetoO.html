@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EYC VETO - Agent Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -10,144 +10,173 @@
             --sidebar-bg: #0f172a;
             --accent: #10b981;
             --bg-main: #f1f5f9;
-            --glass: rgba(255, 255, 255, 0.95);
         }
 
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg-main); overflow: hidden; }
+        /* الأساسيات */
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            height: 100vh; 
+            background: var(--bg-main); 
+            overflow: hidden; 
+        }
 
-        /* Sidebar */
-        .sidebar { width: 280px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; z-index: 100; transition: 0.3s; }
+        /* السايد بار (تعديل للموبايل) */
+        .sidebar { 
+            width: 280px; 
+            background: var(--sidebar-bg); 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            z-index: 1000; 
+            transition: transform 0.3s ease;
+        }
+
+        /* الهيدر للموبايل فقط */
+        .mobile-header {
+            display: none;
+            background: var(--sidebar-bg);
+            color: white;
+            padding: 15px;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0; width: 100%;
+            z-index: 999;
+            box-sizing: border-box;
+        }
+
         .logo-area { padding: 30px; text-align: center; font-size: 1.5rem; font-weight: 900; color: var(--accent); border-bottom: 1px solid #1e293b; letter-spacing: 2px; }
         
         .profile-mini { padding: 20px; text-align: center; border-bottom: 1px solid #1e293b; cursor: pointer; }
-        .profile-mini:hover { background: #1e293b; }
-        .profile-mini img { width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--accent); padding: 3px; margin-bottom: 10px; }
+        .profile-mini img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent); margin-bottom: 10px; }
         
-        .nav-menu { flex: 1; overflow-y: auto; padding: 10px 0; }
-        .level-btn { width: 100%; padding: 15px 25px; background: none; border: none; color: #94a3b8; text-align: left; cursor: pointer; font-weight: 600; border-bottom: 1px solid #1e293b; transition: 0.2s; }
-        .level-btn:hover { background: #1e293b; color: var(--accent); }
+        .nav-menu { flex: 1; overflow-y: auto; }
+        .level-btn { width: 100%; padding: 15px 20px; background: none; border: none; color: #94a3b8; text-align: left; cursor: pointer; border-bottom: 1px solid #1e293b; }
         
         .drawer { max-height: 0; overflow: hidden; background: #020617; transition: max-height 0.3s ease; }
-        .sess-btn { width: 100%; padding: 12px 40px; background: none; border: none; color: #64748b; text-align: left; cursor: pointer; font-size: 0.85rem; }
-        .sess-btn:hover { color: white; }
+        .sess-btn { width: 100%; padding: 12px 40px; background: none; border: none; color: #64748b; text-align: left; font-size: 0.9rem; }
 
-        /* Main Content */
-        .main-stage { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 30px; }
-        .breadcrumb { font-size: 0.8rem; color: #64748b; text-transform: uppercase; margin-bottom: 10px; }
-        .activity-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
+        /* المحتوى الرئيسي */
+        .main-stage { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            overflow-y: auto; 
+            padding: 20px; 
+            margin-top: 0;
+            transition: 0.3s;
+        }
+
+        .activity-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
+            gap: 15px; 
+            margin-top: 20px; 
+        }
         
-        /* Activity Cards */
         .act-card { 
-            padding: 25px 15px; border-radius: 12px; color: white; font-weight: 700; text-align: center; cursor: pointer;
-            transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px 10px; border-radius: 15px; color: white; font-weight: 700; text-align: center; 
+            font-size: 0.85rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .act-card:hover { transform: translateY(-5px); filter: brightness(1.1); }
-        .type-test { background: #dc2626; }    
-        .type-study { background: #2563eb; }   
-        .type-hw { background: #475569; }      
-        .type-rec { background: #0891b2; }     
-        .type-gp { background: #ca8a04; }      
-        .type-special { background: #be123c; }
 
-        /* FLASH CARD MODAL */
-        #flashCardOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.9); z-index: 9999; display: none;
-            justify-content: center; align-items: center; backdrop-filter: blur(10px);
-        }
+        /* المودال (Flash Card) تعديلات الموبايل */
         .flash-card {
-            width: 95%; max-width: 900px; height: 90vh; background: #fff; border-radius: 25px;
-            display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            animation: slideUp 0.4s ease-out;
+            width: 100%; height: 100%; border-radius: 0; display: flex; flex-direction: column;
         }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        .card-header { background: var(--sidebar-bg); color: white; padding: 30px; display: flex; align-items: center; gap: 25px; position: relative; }
-        .card-header::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: var(--accent); }
-        
-        .card-scroll-area { flex: 1; overflow-y: auto; padding: 30px; background: #f8fafc; }
-        
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .info-box { background: white; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; }
-        .info-box label { font-size: 0.65rem; color: #64748b; font-weight: 800; text-transform: uppercase; }
-        .info-box div { font-size: 1rem; font-weight: 700; color: #0f172a; margin-top: 5px; }
+        .card-header { padding: 20px; flex-wrap: wrap; gap: 15px; justify-content: center; text-align: center; }
+        .card-header img { width: 80px !important; height: 80px !important; }
 
-        .levels-container { display: flex; gap: 10px; overflow-x: auto; padding: 10px 5px; margin-bottom: 30px; }
-        .level-card { min-width: 75px; background: white; padding: 15px 10px; border-radius: 15px; text-align: center; border: 2px solid #e2e8f0; }
-        .level-card.complete { border-color: var(--accent); background: #f0fdf4; }
+        .info-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .info-box { padding: 10px; }
 
-        .activity-section { background: white; border-radius: 20px; padding: 20px; border: 1px solid #e2e8f0; }
-        .act-row { display: grid; grid-template-columns: 1fr 100px 150px; padding: 12px; border-bottom: 1px solid #f1f5f9; align-items: center; }
-        .progress-bg { background: #f1f5f9; height: 8px; border-radius: 10px; overflow: hidden; }
-        .progress-fill { background: var(--accent); height: 100%; transition: 1s ease-in-out; }
+        /* الأكتيفتي رو للموبايل */
+        .act-row { grid-template-columns: 1fr 50px; gap: 5px; }
+        .act-row .progress-bg { grid-column: span 2; margin-top: 5px; }
 
-        .card-controls { padding: 20px 30px; background: #fff; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; }
-        .btn { padding: 12px 25px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .btn-refresh { background: #f1f5f9; color: #475569; }
-        .btn-close { background: #ef4444; color: white; }
+        /* Media Queries للموبايل */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0; top: 0; bottom: 0;
+                transform: translateX(-100%);
+            }
+            .sidebar.active { transform: translateX(0); }
+            
+            .mobile-header { display: flex; }
+            .main-stage { padding-top: 80px; }
 
-        /* Activity Window Overlay */
-        #activityOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10001; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        #activityWindow { width: 90%; height: 80%; background: white; border-radius: 20px; overflow: hidden; }
+            .flash-card { height: 100vh; max-height: 100vh; }
+            .card-controls { padding: 15px; flex-direction: column; gap: 10px; }
+            .btn { width: 100%; justify-content: center; }
+            
+            #activityWindow { width: 100%; height: 100%; border-radius: 0; }
+        }
 
-        /* Login */
-        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #020617; z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: #0f172a; padding: 40px; border-radius: 24px; border: 1px solid var(--accent); width: 360px; text-align: center; }
-        .login-input { width: 100%; padding: 14px; margin: 10px 0; background: #020617; border: 1px solid #1e293b; border-radius: 12px; color: white; text-align: center; outline: none; }
+        /* أنواع الكروت */
+        .type-test { background: linear-gradient(135deg, #f87171, #dc2626); }
+        .type-study { background: linear-gradient(135deg, #60a5fa, #2563eb); }
+        .type-hw { background: linear-gradient(135deg, #94a3b8, #475569); }
+        .type-rec { background: linear-gradient(135deg, #22d3ee, #0891b2); }
+        .type-gp { background: linear-gradient(135deg, #fbbf24, #ca8a04); }
+        .type-special { background: linear-gradient(135deg, #fb7185, #be123c); }
+
+        /* Login Overlay */
+        .login-box { width: 90%; max-width: 360px; padding: 25px; }
     </style>
 </head>
 <body>
 
-    <div id="loginOverlay">
-        <div class="login-box">
-            <h2 style="color: white; letter-spacing: 2px;">VETO LOGIN</h2>
-            <input type="email" id="loginEmail" class="login-input" placeholder="AGENT EMAIL">
-            <input type="text" id="loginCode" class="login-input" placeholder="ACCESS CODE">
-            <button onclick="attemptLogin()" id="loginBtn" style="width: 100%; padding: 16px; background: var(--accent); border: none; border-radius: 12px; color: #000; font-weight: 900; cursor: pointer; margin-top: 10px;">AUTHORIZE ACCESS</button>
-        </div>
+    <div class="mobile-header">
+        <div onclick="toggleSidebar()"><i class="fas fa-bars fa-lg"></i></div>
+        <div style="font-weight: 900; color: var(--accent);">VETO SYSTEM</div>
+        <div onclick="openFlashCard()"><i class="fas fa-user-circle fa-lg"></i></div>
     </div>
 
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
         <div class="logo-area">VETO SYSTEM</div>
-        <div class="profile-mini" onclick="openFlashCard()">
-            <img id="sideAvatar" src="">
-            <div id="sideName" style="font-weight: 700;">Agent Name</div>
-            <div style="font-size: 0.7rem; color: var(--accent);">MY FLASH CARD</div>
+        <div class="profile-mini" onclick="openFlashCard(); toggleSidebar();">
+            <img id="sideAvatar" src="https://via.placeholder.com/80">
+            <div id="sideName">Agent Name</div>
+            <div style="font-size: 0.7rem; color: var(--accent);">VIEW PROFILE</div>
         </div>
         
-        <div class="nav-menu" id="levelMenu">
-            </div>
+        <div class="nav-menu" id="levelMenu"></div>
 
-        <button onclick="logout()" style="padding: 20px; background: #dc2626; color: white; border: none; font-weight: 700; cursor: pointer;">
+        <button onclick="logout()" style="padding: 20px; background: #dc2626; color: white; border: none; font-weight: 700;">
             <i class="fas fa-power-off"></i> LOGOUT
         </button>
     </aside>
 
     <main class="main-stage">
-        <div id="path" class="breadcrumb">Select Level & Session</div>
-        <h1 id="sessionTitle">Dashboard</h1>
-        <div class="activity-grid" id="activityGrid"></div>
+        <div id="path" class="breadcrumb">Welcome Agent</div>
+        <h1 id="sessionTitle" style="font-size: 1.5rem; margin: 0;">Dashboard</h1>
+        <div class="activity-grid" id="activityGrid">
+            <div style="text-align: center; grid-column: 1/-1; color: #94a3b8; margin-top: 50px;">
+                <i class="fas fa-arrow-left"></i> Select a Level to start
+            </div>
+        </div>
     </main>
 
     <div id="activityOverlay">
         <div id="activityWindow">
             <iframe id="activityFrame" src="" frameborder="0" style="width:100%; height:100%;"></iframe>
         </div>
-        <div style="margin-top: 20px; display: flex; gap: 20px;">
-            <button class="btn btn-close" onclick="closeActivity()">CLOSE WINDOW</button>
-        </div>
+        <button class="btn btn-close" onclick="closeActivity()" style="position: absolute; bottom: 10px;">CLOSE</button>
     </div>
 
     <div id="flashCardOverlay">
         <div class="flash-card">
             <div class="card-header">
-                <img id="cardAvatar" src="" style="width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--accent); background: white;">
+                <img id="cardAvatar" src="" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--accent);">
                 <div class="header-info">
-                    <h2 id="cardName">--</h2>
-                    <div id="cardEmail" style="opacity: 0.7; font-size: 0.9rem;">--</div>
-                    <div style="margin-top: 12px; display: flex; gap: 20px;">
-                        <span style="background: rgba(16,185,129,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; color: var(--accent); font-weight: 800;">CODE: <span id="cardCode">--</span></span>
-                        <span style="background: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800;">OFFLINE: <span id="cardOffline">--</span></span>
+                    <h2 id="cardName" style="margin:0; font-size: 1.2rem;">--</h2>
+                    <div id="cardEmail" style="font-size: 0.8rem; opacity: 0.8;">--</div>
+                    <div style="margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap; justify-content: center;">
+                        <span style="background:rgba(16,185,129,0.2); padding:3px 10px; border-radius:15px; font-size:0.7rem;">CODE: <b id="cardCode">--</b></span>
+                        <span style="background:rgba(255,255,255,0.1); padding:3px 10px; border-radius:15px; font-size:0.7rem;">OFFLINE: <b id="cardOffline">--</b></span>
                     </div>
                 </div>
             </div>
@@ -156,29 +185,41 @@
                 <div class="info-grid">
                     <div class="info-box"><label>Group</label><div id="cardGroup">--</div></div>
                     <div class="info-box"><label>Age</label><div id="cardAge">--</div></div>
-                    <div class="info-box"><label>Program</label><div id="cardProgram">--</div></div>
                     <div class="info-box"><label>Tokens</label><div id="cardTokens">0</div></div>
-                    <div class="info-box"><label>Global Rank</label><div id="cardGRank">#0</div></div>
-                    <div class="info-box"><label>Local Rank</label><div id="cardLRank">#0</div></div>
+                    <div class="info-box"><label>G-Rank</label><div id="cardGRank">#0</div></div>
                 </div>
 
-                <h3 style="color: #1e293b; margin-bottom: 15px;"><i class="fas fa-layer-group"></i> Mastery Levels</h3>
+                <h3 style="font-size: 1rem;"><i class="fas fa-layer-group"></i> Mastery</h3>
                 <div class="levels-container" id="levelsRow"></div>
 
-                <h3 style="color: #1e293b; margin-bottom: 15px;"><i class="fas fa-chart-line"></i> Activity Performance</h3>
+                <h3 style="font-size: 1rem;"><i class="fas fa-chart-line"></i> Grades</h3>
                 <div class="activity-section" id="activitiesList"></div>
             </div>
 
             <div class="card-controls">
-                <button class="btn btn-refresh" onclick="refreshCard()"><i class="fas fa-sync-alt"></i> REFRESH DATA</button>
-                <button class="btn btn-close" onclick="closeFlashCard()"><i class="fas fa-times"></i> CLOSE CARD</button>
+                <button class="btn btn-refresh" onclick="refreshCard()">REFRESH</button>
+                <button class="btn btn-close" onclick="closeFlashCard()">CLOSE</button>
             </div>
         </div>
     </div>
 
+    <div id="loginOverlay">
+        <div class="login-box">
+            <h2 style="color: white;">VETO LOGIN</h2>
+            <input type="email" id="loginEmail" class="login-input" placeholder="EMAIL">
+            <input type="text" id="loginCode" class="login-input" placeholder="CODE">
+            <button onclick="attemptLogin()" id="loginBtn" style="width: 100%; padding: 15px; background: var(--accent); border: none; border-radius: 12px; font-weight: 900;">ACCESS</button>
+        </div>
+    </div>
+
     <script>
+        // دالة لفتح وقفل السايد بار في الموبايل
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        // نفس الـ Syllabus والـ Script الخاص بك مع تعديل بسيط للـ Mobile
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyBNlaV0EgWQbwGTMXqroAz4aNhl_erXdRkLJezKoZ9jmjFWapgdb4dFX1QrRjpznROsg/exec";
-        
         const syllabus = {
             1: { 1: ["H W", "Lis 1 test", "Gr 1 test"], 2: ["H W", "Gr 2 test", "Lis 2 test", "Vocab 1 study"], 3: ["H W", "Gr 3 test", "Lis 3 test", "Vocab 2 study"], 4: ["H W", "Gr 4 test", "Lis 4 test", "Reading 1 Rec"] },
             2: { 1: ["H W"], 2: ["Lis 5 test", "Gr 5 test", "Reading 2 Rec", "One Shot 1 study"], 3: ["H W", "Lis 6 test", "Reading 3 Rec", "Vocab 3 study"], 4: ["H W", "Lis 7 test", "Reading 4 Rec", "Vocab 4 study", "One Shot 2 study", "Lis 8 test", "Reading 5 Rec", "Gr 6 test", "Tongue Twister 1 Rec"] },
@@ -209,7 +250,8 @@
         async function attemptLogin() {
             const email = document.getElementById('loginEmail').value.trim();
             const code = document.getElementById('loginCode').value.trim();
-            if(!email || !code) return alert("Credentials required.");
+            if(!email || !code) return;
+            document.getElementById('loginBtn').innerText = "Authenticating...";
 
             try {
                 const res = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
@@ -222,8 +264,9 @@
                     buildSidebar();
                     initProfile();
                     openFlashCard();
-                } else { alert("Error: " + data.message); }
+                } else { alert(data.message); }
             } catch (e) { alert("Server Error"); }
+            document.getElementById('loginBtn').innerText = "ACCESS";
         }
 
         function buildSidebar() {
@@ -249,10 +292,11 @@
         }
 
         function loadSession(lvl, sess) {
+            if(window.innerWidth <= 768) toggleSidebar();
             document.getElementById('path').innerText = `Level ${lvl} > Session ${sess}`;
             document.getElementById('sessionTitle').innerText = `Level ${lvl} - Session ${sess}`;
             const grid = document.getElementById('activityGrid');
-            const acts = syllabus[lvl] ? syllabus[lvl][sess] : [];
+            const acts = syllabus[lvl][sess];
             grid.innerHTML = acts.map(a => `
                 <div class="act-card ${getActType(a)}" onclick="launchActivity('${a}', ${lvl}, ${sess})">${a}</div>
             `).join('');
@@ -260,8 +304,7 @@
 
         function launchActivity(name, lvl, sess) {
             const fileName = name.replace(/\s+/g, '_');
-            const frame = document.getElementById('activityFrame');
-            frame.src = `eycmainengine.html?activity=${fileName}&email=${userProfile.email}&lvl=${lvl}&sess=${sess}`;
+            document.getElementById('activityFrame').src = `eycmainengine.html?activity=${fileName}&email=${userProfile.email}&lvl=${lvl}&sess=${sess}`;
             document.getElementById('activityOverlay').style.display = 'flex';
         }
 
@@ -276,8 +319,8 @@
         }
 
         function openFlashCard() {
-            if(!userProfile) return;
             const u = userProfile;
+            if(!u) return;
             document.getElementById('cardAvatar').src = u.avatar;
             document.getElementById('cardName').innerText = u.name;
             document.getElementById('cardEmail').innerText = u.email;
@@ -285,42 +328,32 @@
             document.getElementById('cardOffline').innerText = u.offlineCode;
             document.getElementById('cardGroup').innerText = u.group;
             document.getElementById('cardAge').innerText = u.age;
-            document.getElementById('cardProgram').innerText = u.program;
             document.getElementById('cardTokens').innerText = u.tokens;
             document.getElementById('cardGRank').innerText = "#" + u.gRank;
-            document.getElementById('cardLRank').innerText = "#" + u.lRank;
 
             const lRow = document.getElementById('levelsRow');
             lRow.innerHTML = "";
             for(let i=1; i<=12; i++) {
-                const s = u.levelsScores ? u.levelsScores[i] : 0;
-                lRow.innerHTML += `<div class="level-card ${s > 0 ? 'complete' : ''}"><small>LVL ${i}</small><div>${s}%</div></div>`;
+                const s = u.levelsScores[i] || 0;
+                lRow.innerHTML += `<div class="level-card ${s > 0 ? 'complete' : ''}"><small>L${i}</small><div>${s}%</div></div>`;
             }
 
             const acts = [
                 {l: "Attendance", v: u.grades.attendance}, {l: "ICA", v: u.grades.ica},
                 {l: "Listening", v: u.grades.listening}, {l: "Grammar", v: u.grades.grammar},
-                {l: "Reading", v: u.grades.reading}, {l: "Tongue Twister", v: u.grades.tongue},
-                {l: "One Shot", v: u.grades.oneshot}, {l: "Games", v: u.grades.games},
-                {l: "Squeezer", v: u.grades.squeezer}, {l: "DMT", v: u.grades.dmt},
-                {l: "Wish", v: u.grades.wish}, {l: "Project", v: u.grades.project},
-                {l: "Graduation Project", v: u.grades.gradProject}
+                {l: "Reading", v: u.grades.reading}, {l: "Tongue", v: u.grades.tongue}
             ];
             document.getElementById('activitiesList').innerHTML = acts.map(a => `
                 <div class="act-row">
-                    <div class="act-name">${a.l}</div>
-                    <div class="act-score">${a.v || 0}</div>
+                    <div style="font-size:0.8rem; font-weight:bold;">${a.l}</div>
+                    <div style="text-align:right; font-weight:900; color:var(--accent);">${a.v || 0}</div>
                     <div class="progress-bg"><div class="progress-fill" style="width:${Math.min(a.v, 100)}%"></div></div>
                 </div>`).join('');
             document.getElementById('flashCardOverlay').style.display = 'flex';
         }
 
         function closeFlashCard() { document.getElementById('flashCardOverlay').style.display = 'none'; }
-
-        async function refreshCard() {
-            await attemptLogin();
-        }
-
+        async function refreshCard() { await attemptLogin(); }
         function logout() { localStorage.clear(); location.reload(); }
 
         window.onload = () => {
