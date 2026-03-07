@@ -70,8 +70,8 @@ function buildLevelMenu() {
     let html = "";
     for(let i=1; i<=12; i++) {
         html += `<div class="level-card" onclick="showSessions(${i})">
-                    <i class="fas fa-layer-group fa-2x" style="color:var(--accent)"></i>
-                    <div style="margin-top:10px; font-weight:900;">LEVEL ${i}</div>
+                    <i class="fas fa-folder-open fa-2x" style="color:var(--accent); margin-bottom:10px;"></i>
+                    <div style="font-weight:bold;">LEVEL ${i}</div>
                  </div>`;
     }
     menu.innerHTML = html;
@@ -80,17 +80,23 @@ function buildLevelMenu() {
 function showSessions(lvl) {
     document.getElementById('navigationView').style.display = 'none';
     document.getElementById('sessionView').style.display = 'block';
-    document.getElementById('path').innerText = `Level ${lvl}`;
+    document.getElementById('path').innerText = `LEVEL ${lvl}`;
     
     const sessList = document.getElementById('sessionList');
     sessList.innerHTML = [1,2,3,4].map(s => 
-        `<button class="sess-btn" onclick="loadActivities(${lvl}, ${s})">Session ${s}</button>`
+        `<button class="sess-btn ${s===1?'active':''}" onclick="changeSession(this, ${lvl}, ${s})">Session ${s}</button>`
     ).join('');
+    
     loadActivities(lvl, 1);
 }
 
+function changeSession(btn, lvl, sess) {
+    document.querySelectorAll('.sess-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    loadActivities(lvl, sess);
+}
+
 function loadActivities(lvl, sess) {
-    document.getElementById('path').innerText = `Level ${lvl} > Session ${sess}`;
     const grid = document.getElementById('activityGrid');
     const acts = syllabus[lvl][sess];
     grid.innerHTML = acts.map(a => `
@@ -106,7 +112,7 @@ function showLevels() {
 function launchActivity(name, lvl, sess) {
     const fileName = name.replace(/\s+/g, '_');
     document.getElementById('activityFrame').src = `eycmainengine.html?activity=${fileName}&email=${userProfile.email}&lvl=${lvl}&sess=${sess}`;
-    document.getElementById('activityOverlay').style.display = 'flex';
+    document.getElementById('activityOverlay').style.display = 'block';
     document.body.classList.add('activity-open');
 }
 
@@ -114,4 +120,9 @@ function closeActivity() {
     document.getElementById('activityOverlay').style.display = 'none';
     document.getElementById('activityFrame').src = "";
     document.body.classList.remove('activity-open');
+}
+
+function logout() {
+    localStorage.clear();
+    location.reload();
 }
