@@ -1,47 +1,4 @@
-// ... (حافظ على متغير SCRIPT_URL وسجل الـ syllabus كما هو)function initProfile() {
-    if(!userProfile) return;
-    document.getElementById('headerAvatar').src = userProfile.avatar;
-    document.getElementById('headerName').innerText = userProfile.name;
-    document.getElementById('headerCode').innerText = userProfile.code;
-    document.getElementById('headerTokens').innerText = userProfile.tokens;
-    document.getElementById('headerRank').innerText = `#${userProfile.rank}`;
-    buildLevelMenu(); // إظهار المستويات فور تسجيل الدخول
-}// بناء كروت المستوياتfunction buildLevelMenu() {
-    const menu = document.getElementById('levelMenu');
-    menu.innerHTML = ""; 
-    for(let i=1; i<=12; i++) {
-        const card = document.createElement('div');
-        card.className = 'level-card';
-        card.onclick = () => showSessions(i);
-        card.innerHTML = `
-            <i class="fas fa-layer-group fa-2x" style="color:var(--accent); margin-bottom:10px;"></i>
-            <div style="font-weight:bold; color:white;">LEVEL ${i}</div>
-        `;
-        menu.appendChild(card);
-    }
-}// تشغيل المهمة داخل الـ iFrame من مجلد datafunction launchActivity(name, lvl, sess) {
-    // تحويل الاسم ليكون متوافق مع اسم الملف (مثال: Lis 1 test -> Lis_1_test.html)
-    const fileName = name.trim().replace(/\s+/g, '_');
-    const iframe = document.getElementById('activityFrame');
-    
-    // التوجيه لمجلد data
-    const targetUrl = `data/${fileName}.html?email=${encodeURIComponent(userProfile.email)}&lvl=${lvl}&sess=${sess}`;
-    
-    iframe.src = targetUrl;
-    document.getElementById('activityOverlay').style.display = 'block';
-    document.body.classList.add('activity-open');
-    
-    console.log("Launching Mission:", targetUrl);
-}// إضافة مستمع للأحداث للتحقق من التلقائي (Auto-Login)window.onload = () => {
-    const savedEmail = localStorage.getItem('veto_email');
-    const savedCode = localStorage.getItem('veto_code');
-    if(savedEmail && savedCode) {
-        document.getElementById('loginEmail').value = savedEmail;
-        document.getElementById('loginCode').value = savedCode;
-        attemptLogin();
-    }
-};
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxOQVHv2KJcDgDUkhGsEUh4w-X9LsF2ecG82RSOScDQcJnEaDrbXJjn31Cu0148L6zxKQ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBR-GQBOpJt2zyBbS_Vsi9koqhwT6jU9cp4iNl2sFdlDBT6Z-HXJx5eo8kzyK1utGMBQ/exec";
 const syllabus = {
     1: { 1: ["H W", "Lis 1 test", "Gr 1 test"], 2: ["H W", "Gr 2 test", "Lis 2 test", "Vocab 1 study"], 3: ["H W", "Gr 3 test", "Lis 3 test", "Vocab 2 study"], 4: ["H W", "Gr 4 test", "Lis 4 test", "Reading 1 Rec"] },
     2: { 1: ["H W"], 2: ["Lis 5 test", "Gr 5 test", "Reading 2 Rec", "One Shot 1 study"], 3: ["H W", "Lis 6 test", "Reading 3 Rec", "Vocab 3 study"], 4: ["H W", "Lis 7 test", "Reading 4 Rec", "Vocab 4 study", "One Shot 2 study", "Lis 8 test", "Reading 5 Rec", "Gr 6 test", "Tongue Twister 1 Rec"] },
@@ -106,14 +63,17 @@ function initProfile() {
 
 function buildLevelMenu() {
     const menu = document.getElementById('levelMenu');
-    let html = "";
+    menu.innerHTML = ""; 
     for(let i=1; i<=12; i++) {
-        html += `<div class="level-card" onclick="showSessions(${i})">
-                    <i class="fas fa-folder-open fa-2x" style="color:var(--accent); margin-bottom:10px;"></i>
-                    <div style="font-weight:bold;">LEVEL ${i}</div>
-                 </div>`;
+        const card = document.createElement('div');
+        card.className = 'level-card';
+        card.onclick = () => showSessions(i);
+        card.innerHTML = `
+            <i class="fas fa-layer-group fa-2x" style="color:var(--accent); margin-bottom:10px;"></i>
+            <div style="font-weight:bold; color:white;">LEVEL ${i}</div>
+        `;
+        menu.appendChild(card);
     }
-    menu.innerHTML = html;
 }
 
 function showSessions(lvl) {
@@ -149,10 +109,15 @@ function showLevels() {
 }
 
 function launchActivity(name, lvl, sess) {
-    const fileName = name.replace(/\s+/g, '_');
-    document.getElementById('activityFrame').src = `data/${fileName}.html?email=${encodeURIComponent(userProfile.email)}&lvl=${lvl}&sess=${sess}`;
+    const fileName = name.trim().replace(/\s+/g, '_');
+    const iframe = document.getElementById('activityFrame');
+    const targetUrl = `data/${fileName}.html?email=${encodeURIComponent(userProfile.email)}&lvl=${lvl}&sess=${sess}`;
+    
+    iframe.src = targetUrl;
     document.getElementById('activityOverlay').style.display = 'block';
     document.body.classList.add('activity-open');
+    
+    console.log("Launching Mission:", targetUrl);
 }
 
 function closeActivity() {
@@ -167,11 +132,11 @@ function logout() {
 }
 
 window.onload = () => {
-    const e = localStorage.getItem('veto_email');
-    const c = localStorage.getItem('veto_code');
-    if(e && c) {
-        document.getElementById('loginEmail').value = e;
-        document.getElementById('loginCode').value = c;
+    const savedEmail = localStorage.getItem('veto_email');
+    const savedCode = localStorage.getItem('veto_code');
+    if(savedEmail && savedCode) {
+        document.getElementById('loginEmail').value = savedEmail;
+        document.getElementById('loginCode').value = savedCode;
         attemptLogin();
     }
 };
