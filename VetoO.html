@@ -7,6 +7,39 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="vetoo.css">
+    <style>
+        /* CSS from Snippet */
+        .new-student-btn {
+            /* Styles not provided in snippet, maintaining placeholder for structural integrity */
+        }
+        .notification-wrapper {
+            position: relative;
+        }
+        .badge {
+            /* Styles not provided in snippet */
+        }
+        .mailbox-popup {
+            position: absolute;
+            z-index: 1000;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+        }
+        .flash-card {
+            position: relative;
+            margin: 10% auto;
+            padding: 20px;
+            background: #fff;
+            width: 80%;
+            max-width: 500px;
+        }
+    </style>
 </head>
 <body>
 
@@ -23,11 +56,23 @@
                     <span><i class="fas fa-trophy"></i> RANK: <b id="headerRank">#0</b></span>
                 </div>
             </div>
+            
+            <div class="notification-wrapper">
+                <button class="noti-btn" id="notiBtn" onclick="toggleMailbox()">
+                    <i class="fas fa-bell"></i>
+                    <span id="notiBadge" class="badge"></span>
+                </button>
+            </div>
+            
+            <button class="info-btn" onclick="showFlashScreen()"><i class="fas fa-id-card"></i></button>
+            
             <button class="logout-btn" onclick="logout()"><i class="fas fa-power-off"></i></button>
         </div>
     </header>
 
     <main class="main-content">
+        <button onclick="window.location.href='NS.html'" class="new-student-btn">NEW AGENT (تسجيل جديد)</button>
+
         <div id="navigationView" class="view-container">
             <div class="section-header">
                 <h2><i class="fas fa-rocket"></i> MISSION CONTROL</h2>
@@ -51,6 +96,18 @@
         </div>
     </main>
 
+    <div id="mailbox" class="mailbox-popup" style="display:none;">
+        <h3><i class="fas fa-envelope-open-text"></i> MESSAGES</h3>
+        <div id="msgList"></div>
+    </div>
+
+    <div id="flashScreen" class="overlay" style="display:none;">
+        <div class="flash-card">
+            <button class="close-flash" onclick="closeFlash()">&times;</button>
+            <div id="flashContent"></div>
+        </div>
+    </div>
+
     <div id="activityOverlay">
         <div id="activityWindow">
             <iframe id="activityFrame" src="" frameborder="0" loading="lazy" allow="autoplay; encrypted-media"></iframe>
@@ -70,5 +127,20 @@
     </div>
 
     <script src="vetoo.js"></script>
+    <script>
+        /* JS Logic for integrated elements */
+        function toggleMailbox() {
+            const lb = document.getElementById('mailbox');
+            lb.style.display = lb.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function showFlashScreen() {
+            document.getElementById('flashScreen').style.display = 'block';
+        }
+
+        function closeFlash() {
+            document.getElementById('flashScreen').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
