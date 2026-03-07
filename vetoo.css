@@ -1,160 +1,112 @@
-:root {
-    --bg-dark: #020617;
-    --card-bg: #0f172a;
-    --accent: #10b981;
-    --text-main: #f1f5f9;
-    --text-dim: #94a3b8;
+/* الجرس والرسائل */
+.noti-btn { 
+    position: relative; 
+    background: none; 
+    border: none; 
+    color: white; 
+    font-size: 1.5rem; 
+    cursor: pointer; 
 }
 
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Inter', sans-serif;
-    background: var(--bg-dark);
-    color: var(--text-main);
-    overflow-x: hidden;
+.noti-btn.has-new { 
+    color: #ef4444; 
+    animation: pulse 1s infinite; 
 }
 
-/* Banner Design */
-.student-banner {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    padding: 20px;
-    border-bottom: 2px solid var(--accent);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+.badge { 
+    position: absolute; 
+    top: 0; 
+    right: 0; 
+    width: 10px; 
+    height: 10px; 
+    background: red; 
+    border-radius: 50%; 
+    display: none; 
 }
 
-.banner-content {
-    max-width: 1000px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 20px;
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
 }
 
-.avatar-wrapper img {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    border: 3px solid var(--accent);
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+.mailbox-popup {
+    position: absolute; 
+    top: 80px; 
+    right: 20px; 
+    width: 250px; 
+    background: var(--card-bg); 
+    border: 1px solid var(--accent); 
+    padding: 15px; 
+    border-radius: 10px; 
+    z-index: 1000;
 }
 
-.student-info h1 {
-    margin: 0 0 5px 0;
-    font-size: 1.2rem;
-    letter-spacing: 1px;
+/* Flash Screen */
+.overlay {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(0,0,0,0.9); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 3000;
 }
 
-.stats-row {
-    display: flex;
-    gap: 15px;
-    font-size: 0.8rem;
-    color: var(--text-dim);
+.flash-card {
+    background: #1e293b; 
+    width: 90%; 
+    max-width: 500px; 
+    padding: 25px; 
+    border-radius: 20px;
+    border: 2px solid var(--accent); 
+    position: relative; 
+    max-height: 80vh; 
+    overflow-y: auto;
 }
 
-.stats-row b { color: var(--accent); }
-
-.logout-btn {
-    margin-left: auto;
-    background: #ef4444;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    cursor: pointer;
+.flash-section { 
+    margin-bottom: 20px; 
+    border-bottom: 1px solid #334155; 
+    padding-bottom: 10px; 
 }
 
-/* Main Content Layout */
-.main-content {
-    max-width: 1000px;
-    margin: 30px auto;
-    padding: 0 20px;
+.flash-section h4 { 
+    color: var(--accent); 
+    margin-bottom: 10px; 
 }
 
-.section-header { text-align: center; margin-bottom: 30px; }
-.section-header h2 { color: var(--accent); margin-bottom: 5px; }
-.section-header p { color: var(--text-dim); font-size: 0.9rem; }
-
-/* Levels & Activity Grids */
-.level-grid, .activity-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 15px;
+.info-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 10px; 
+    font-size: 0.85rem; 
 }
 
-.level-card, .act-card {
-    background: var(--card-bg);
-    padding: 25px 10px;
-    border-radius: 15px;
-    text-align: center;
-    cursor: pointer;
-    border: 1px solid #1e293b;
-    transition: 0.3s;
+.mini-grid { 
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 5px; 
+    font-size: 0.75rem;
 }
 
-.level-card:hover { border-color: var(--accent); transform: translateY(-5px); }
-
-/* Session Tabs */
-.session-tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-}
-
-.sess-btn {
-    padding: 10px 20px;
-    background: #1e293b;
+.close-flash {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
     border: none;
     color: white;
-    border-radius: 8px;
+    font-size: 1.5rem;
     cursor: pointer;
-    white-space: nowrap;
 }
 
-.sess-btn.active { background: var(--accent); font-weight: bold; }
-
-#activityOverlay {
-    position: fixed; top:0; left:0; width:100%; height:100%;
-    background: rgba(0,0,0,0.98); 
-    display: none; /* سيتحول لـ block بواسطة JS */
-    flex-direction: column;
-    z-index: 2000;
+.msg-item {
+    padding: 10px;
+    border-bottom: 1px solid #334155;
+    font-size: 0.9rem;
+    color: white;
 }
-#activityWindow { width: 100%; height: calc(100% - 80px); } /* ترك مساحة للزرار */
-
-.close-mission-btn {
-    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-    background: #ef4444; color: white; border: none; padding: 12px 30px;
-    border-radius: 50px; font-weight: bold; cursor: pointer;
-}
-
-/* Login Box */
-.login-box {
-    background: var(--card-bg); padding: 40px; border-radius: 20px;
-    width: 90%; max-width: 350px; position: absolute; top:50%; left:50%; transform: translate(-50%, -50%);
-    text-align: center;
-}
-
-.login-box input {
-    width: 100%; padding: 12px; margin-bottom: 15px; background: #1e293b;
-    border: 1px solid #334155; color: white; border-radius: 8px; box-sizing: border-box;
-}
-
-#loginBtn {
-    width: 100%; padding: 12px; background: var(--accent); border: none;
-    color: white; border-radius: 8px; font-weight: bold; cursor: pointer;
-}
-
-/* Card Types */
-.type-test { background: linear-gradient(135deg, #f87171, #dc2626); }
-.type-study { background: linear-gradient(135deg, #60a5fa, #2563eb); }
-.type-hw { background: linear-gradient(135deg, #94a3b8, #475569); }
-.type-rec { background: linear-gradient(135deg, #22d3ee, #0891b2); }
-.type-special { background: linear-gradient(135deg, #fb7185, #be123c); }
-
-body.activity-open { overflow: hidden; }
-body.activity-open .student-banner { display: none; }
