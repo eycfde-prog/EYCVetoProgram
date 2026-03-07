@@ -59,9 +59,9 @@ function initProfile() {
     if(!userProfile) return;
     document.getElementById('headerAvatar').src = userProfile.avatar || "https://via.placeholder.com/100";
     document.getElementById('headerName').innerText = userProfile.name;
-    document.getElementById('headerCode').innerText = userProfile.offlineCode;
+    document.getElementById('headerCode').innerText = userProfile.code;
     document.getElementById('headerTokens').innerText = userProfile.tokens;
-    document.getElementById('headerRank').innerText = `#${userProfile.gRank}`;
+    document.getElementById('headerRank').innerText = `#${userProfile.rank}`;
     buildLevelMenu();
 }
 
