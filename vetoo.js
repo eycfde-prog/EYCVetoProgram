@@ -59,9 +59,9 @@ function initProfile() {
     if(!userProfile) return;
     document.getElementById('headerAvatar').src = userProfile.avatar || "https://via.placeholder.com/100";
     document.getElementById('headerName').innerText = userProfile.name;
-    document.getElementById('headerCode').innerText = userProfile.code;
+    document.getElementById('headerCode').innerText = userProfile.offlineCode;
     document.getElementById('headerTokens').innerText = userProfile.tokens;
-    document.getElementById('headerRank').innerText = `#${userProfile.rank}`;
+    document.getElementById('headerRank').innerText = `#${userProfile.gRank}`;
     buildLevelMenu();
 }
 
@@ -111,7 +111,7 @@ function showLevels() {
 
 function launchActivity(name, lvl, sess) {
     const fileName = name.replace(/\s+/g, '_');
-    document.getElementById('activityFrame').src = `eycmainengine.html?activity=${fileName}&email=${userProfile.email}&lvl=${lvl}&sess=${sess}`;
+    document.getElementById('activityFrame').src = `eycmainengine.html?activity=${fileName}&email=${encodeURIComponent(userProfile.email)}&lvl=${lvl}&sess=${sess}`;
     document.getElementById('activityOverlay').style.display = 'block';
     document.body.classList.add('activity-open');
 }
