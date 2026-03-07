@@ -6,7 +6,9 @@
     <title>EYC VETO - Mission Control</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="vetoo.css">
+    <style>
+        /* Placeholder for vetoo.css content - integration requirement */
+    </style>
 </head>
 <body>
 
@@ -34,7 +36,7 @@
                 <p>Select your training level to begin</p>
             </div>
             <div class="level-grid" id="levelMenu">
-                </div>
+            </div>
         </div>
 
         <div id="sessionView" class="view-container" style="display: none;">
@@ -44,19 +46,19 @@
             </div>
             
             <div class="session-tabs" id="sessionList">
-                </div>
+            </div>
 
             <div class="activity-grid" id="activityGrid">
-                </div>
+            </div>
         </div>
     </main>
 
     <div id="activityOverlay">
         <div id="activityWindow">
-            <iframe id="activityFrame" src="" frameborder="0"></iframe>
+            <iframe id="activityFrame" src="" frameborder="0" loading="lazy" allow="autoplay; encrypted-media"></iframe>
         </div>
         <button class="close-mission-btn" onclick="closeActivity()">
-            <i class="fas fa-times"></i> ABORT MISSION
+            <i class="fas fa-times"></i> ABORT MISSION (إغلاق)
         </button>
     </div>
 
@@ -69,6 +71,38 @@
         </div>
     </div>
 
-    <script src="vetoo.js"></script>
+    <script>
+        /* Placeholder for vetoo.js content - integration requirement */
+        
+        function buildLevelMenu() {
+            // Logic to dynamically create level buttons as per instructions
+        }
+
+        function launchActivity(fileName) {
+            const frame = document.getElementById('activityFrame');
+            frame.src = `data/${fileName}.html`;
+            document.getElementById('activityOverlay').style.display = 'flex';
+        }
+
+        function closeActivity() {
+            const frame = document.getElementById('activityFrame');
+            frame.src = "";
+            document.getElementById('activityOverlay').style.display = 'none';
+        }
+
+        function showLevels() {
+            document.getElementById('sessionView').style.display = 'none';
+            document.getElementById('navigationView').style.display = 'block';
+        }
+
+        function logout() {
+            // Logout logic
+            location.reload();
+        }
+
+        function attemptLogin() {
+            // Login logic including JSON data binding from GAS
+        }
+    </script>
 </body>
 </html>
