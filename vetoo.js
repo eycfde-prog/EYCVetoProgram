@@ -48,8 +48,12 @@ async function attemptLogin() {
             document.getElementById('loginOverlay').style.display = 'none';
             
             checkMessages(data.profile.msg);
-            if(!flashShown) showFlashScreen();
             initProfile();
+            
+            if(!flashShown) {
+                showFlashScreen();
+                flashShown = true;
+            }
         } else { 
             alert(data.message); 
             localStorage.clear();
@@ -63,6 +67,7 @@ async function attemptLogin() {
 }
 
 function checkMessages(newMsg) {
+    if(!newMsg) return;
     const oldMsgs = JSON.parse(localStorage.getItem('msgs') || "[]");
     const notiBtn = document.getElementById('notiBtn');
     const badge = document.getElementById('notiBadge');
@@ -74,50 +79,60 @@ function checkMessages(newMsg) {
         notiBtn.classList.remove('has-new');
         badge.style.display = 'none';
     }
+    document.getElementById('msgList').innerHTML = `<div class="msg-item">${newMsg}</div>`;
 }
 
 function toggleMailbox() {
     const box = document.getElementById('mailbox');
-    box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    const badge = document.getElementById('notiBadge');
+    const isOpening = box.style.display === 'none';
     
-    if(userProfile && userProfile.msg) {
-        document.getElementById('msgList').innerHTML = `<div class="msg-item">${userProfile.msg}</div>`;
+    box.style.display = isOpening ? 'block' : 'none';
+    
+    if(isOpening && userProfile && userProfile.msg) {
         let read = JSON.parse(localStorage.getItem('msgs') || "[]");
-        if(!read.includes(userProfile.msg)) read.push(userProfile.msg);
-        localStorage.setItem('msgs', JSON.stringify(read));
-        checkMessages(userProfile.msg); 
+        if(!read.includes(userProfile.msg)) {
+            read.push(userProfile.msg);
+            localStorage.setItem('msgs', JSON.stringify(read));
+        }
+        badge.style.display = 'none';
+        document.getElementById('notiBtn').classList.remove('has-new');
     }
 }
 
 function showFlashScreen() {
+    if(!fullData) return;
     const content = document.getElementById('flashContent');
-    const p = userProfile;
-    const lvls = fullData.levels;
-    const sc = fullData.scard;
+    const { profile, levels, scard } = fullData;
 
     content.innerHTML = `
         <div class="flash-section">
-            <h4><i class="fas fa-user-shield"></i> BASIC INFO</h4>
+            <h4><i class="fas fa-user-shield"></i> BASIC DOSSIER</h4>
             <div class="info-grid">
-                <span><b>ID:</b> ${p.code}</span> <span><b>Group:</b> ${p.group}</span>
-                <span><b>Tokens:</b> ${p.tokens}</span> <span><b>Stars:</b> ${p.stars} ⭐</span>
-                <span><b>Global Rank:</b> #${p.gRank}</span> <span><b>Local Rank:</b> #${p.lRank}</span>
+                <span><b>Code:</b> ${profile.code}</span>
+                <span><b>Name:</b> ${profile.name}</span>
+                <span><b>Group:</b> ${profile.group}</span>
+                <span><b>Stars:</b> ${profile.stars} ⭐</span>
+                <span><b>Global Rank:</b> #${profile.gRank}</span>
+                <span><b>Local Rank:</b> #${profile.lRank}</span>
             </div>
         </div>
         <div class="flash-section">
-            <h4><i class="fas fa-chart-line"></i> LEVELS PROGRESS</h4>
-            <div class="mini-grid">${lvls.map((v, i) => `<div>L${i+1}: ${v}%</div>`).join('')}</div>
+            <h4><i class="fas fa-layer-group"></i> ACADEMIC PROGRESS (SL)</h4>
+            <div class="mini-grid">
+                ${levels.map((val, i) => `<div>L${i+1}: <b>${val}%</b></div>`).join('')}
+            </div>
         </div>
         <div class="flash-section">
-            <h4><i class="fas fa-tasks"></i> ACTIVITY CARD</h4>
+            <h4><i class="fas fa-id-card"></i> PERFORMANCE SCARD</h4>
             <div class="info-grid">
-                <span>Attendance: ${sc[0]}</span> <span>Listening: ${sc[3]}</span>
-                <span>Grammar: ${sc[4]}</span> <span>Projects: ${sc[10]}</span>
+                <span>Attend: ${scard[0]}</span> <span>ICA: ${scard[1]}</span>
+                <span>Grammar: ${scard[4]}</span> <span>DMT: ${scard[11]}</span>
+                <span>Project: ${scard[13]}</span>
             </div>
         </div>
     `;
     document.getElementById('flashScreen').style.display = 'flex';
-    flashShown = true;
 }
 
 function initProfile() {
