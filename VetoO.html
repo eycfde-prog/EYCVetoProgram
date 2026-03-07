@@ -72,37 +72,7 @@
     </div>
 
     <script>
-        /* Placeholder for vetoo.js content - integration requirement */
-        
-        function buildLevelMenu() {
-            // Logic to dynamically create level buttons as per instructions
-        }
-
-        function launchActivity(fileName) {
-            const frame = document.getElementById('activityFrame');
-            frame.src = `data/${fileName}.html`;
-            document.getElementById('activityOverlay').style.display = 'flex';
-        }
-
-        function closeActivity() {
-            const frame = document.getElementById('activityFrame');
-            frame.src = "";
-            document.getElementById('activityOverlay').style.display = 'none';
-        }
-
-        function showLevels() {
-            document.getElementById('sessionView').style.display = 'none';
-            document.getElementById('navigationView').style.display = 'block';
-        }
-
-        function logout() {
-            // Logout logic
-            location.reload();
-        }
-
-        function attemptLogin() {
-            // Login logic including JSON data binding from GAS
-        }
+<script src="vetoo.js"></script>
     </script>
 </body>
 </html>
