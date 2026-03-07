@@ -1,17 +1,59 @@
+/* ملف vetoo.css المدمج */
+
 :root {
     --sidebar-bg: #0f172a;
     --accent: #10b981;
-    --bg-main: #f1f5f9;
+    --bg-main: #020617; /* التعديل الجديد */
 }
 
 body { 
     font-family: 'Segoe UI', sans-serif; 
     margin: 0; 
-    display: flex; 
+    display: block; /* التعديل الجديد */
     height: 100vh; 
     background: var(--bg-main); 
-    overflow: hidden; 
+    overflow-y: auto; /* التعديل الجديد */
 }
+
+/* تصميم البانر الجديد */
+.student-banner {
+    background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
+    padding: 20px;
+    border-bottom: 3px solid var(--accent);
+    display: block;
+    transition: 0.3s;
+}
+
+.banner-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.avatar-wrapper img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+}
+
+.student-info h1 {
+    color: white;
+    margin: 0 0 5px 0;
+    font-size: 1.4rem;
+}
+
+.stats-row {
+    display: flex;
+    gap: 15px;
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+
+.stats-row b { color: var(--accent); }
 
 /* Sidebar Desktop & Base */
 .sidebar { 
@@ -62,6 +104,33 @@ body {
 
 .breadcrumb { font-size: 0.8rem; color: #64748b; margin-bottom: 5px; text-transform: uppercase; }
 
+/* شبكة المستويات */
+.level-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    padding: 20px;
+}
+
+.level-card {
+    background: #1e293b;
+    padding: 30px 10px;
+    border-radius: 15px;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+    border: 1px solid #334155;
+    transition: 0.3s;
+}
+
+.level-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-5px);
+    background: #0f172a;
+}
+
+.level-card.complete { border-color: var(--accent); color: var(--accent); }
+
 .activity-grid { 
     display: grid; 
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
@@ -82,7 +151,29 @@ body {
     background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 2000;
 }
 
+#activityOverlay {
+    background: #000; /* تجربة سينمائية كاملة للنشاط */
+}
+
 #activityWindow { width: 90%; height: 90%; background: white; border-radius: 20px; overflow: hidden; position: relative; }
+
+.btn-close-activity {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    z-index: 3000;
+}
+
+/* إخفاء البانر عند تفعيل الأوفرلاي */
+body.activity-open .student-banner {
+    display: none;
+}
 
 /* Flash Card */
 .flash-card {
@@ -98,8 +189,6 @@ body {
 .info-box div { font-weight: 800; font-size: 1rem; }
 
 .levels-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
-.level-card { background: #0f172a; padding: 8px; border-radius: 8px; text-align: center; font-size: 0.7rem; border: 1px solid #334155; }
-.level-card.complete { border-color: var(--accent); color: var(--accent); }
 
 .act-row { display: grid; grid-template-columns: 1fr 50px; gap: 5px; margin-bottom: 12px; align-items: center; }
 .progress-bg { grid-column: span 2; height: 6px; background: #334155; border-radius: 3px; overflow: hidden; }
