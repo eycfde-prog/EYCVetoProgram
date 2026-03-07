@@ -1,3 +1,4 @@
+// vetoo.js
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBR-GQBOpJt2zyBbS_Vsi9koqhwT6jU9cp4iNl2sFdlDBT6Z-HXJx5eo8kzyK1utGMBQ/exec";
 const syllabus = {
     1: { 1: ["H W", "Lis 1 test", "Gr 1 test"], 2: ["H W", "Gr 2 test", "Lis 2 test", "Vocab 1 study"], 3: ["H W", "Gr 3 test", "Lis 3 test", "Vocab 2 study"], 4: ["H W", "Gr 4 test", "Lis 4 test", "Reading 1 Rec"] },
@@ -44,8 +45,13 @@ async function attemptLogin() {
             localStorage.setItem('veto_code', code);
             document.getElementById('loginOverlay').style.display = 'none';
             initProfile();
-        } else { alert(data.message); }
-    } catch (e) { alert("Connection Error. Please check your internet."); }
+        } else { 
+            alert(data.message); 
+            localStorage.clear();
+        }
+    } catch (e) { 
+        alert("Connection Error. Please check your internet."); 
+    }
     
     btn.innerText = "ACCESS DASHBOARD";
     btn.disabled = false;
@@ -55,9 +61,9 @@ function initProfile() {
     if(!userProfile) return;
     document.getElementById('headerAvatar').src = userProfile.avatar || "https://via.placeholder.com/100";
     document.getElementById('headerName').innerText = userProfile.name;
-    document.getElementById('headerCode').innerText = userProfile.offlineCode || userProfile.code || "--";
+    document.getElementById('headerCode').innerText = userProfile.code || "--";
     document.getElementById('headerTokens').innerText = userProfile.tokens;
-    document.getElementById('headerRank').innerText = `#${userProfile.gRank || 0}`;
+    document.getElementById('headerRank').innerText = `#${userProfile.rank || 0}`;
     buildLevelMenu();
 }
 
@@ -111,13 +117,12 @@ function showLevels() {
 function launchActivity(name, lvl, sess) {
     const fileName = name.trim().replace(/\s+/g, '_');
     const iframe = document.getElementById('activityFrame');
+    // Using current profile email and parameters mapping to match iframe structure
     const targetUrl = `data/${fileName}.html?email=${encodeURIComponent(userProfile.email)}&lvl=${lvl}&sess=${sess}`;
     
     iframe.src = targetUrl;
-    document.getElementById('activityOverlay').style.display = 'block';
+    document.getElementById('activityOverlay').style.display = 'flex';
     document.body.classList.add('activity-open');
-    
-    console.log("Launching Mission:", targetUrl);
 }
 
 function closeActivity() {
